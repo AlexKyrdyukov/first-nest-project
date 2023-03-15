@@ -1,8 +1,19 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
-}
-bootstrap();
+import logger from './utils/logger';
+import { AppModule } from './app.module';
+import config from './config';
+
+(async () => {
+  try {
+    const app = await NestFactory.create(AppModule);
+    app.setGlobalPrefix(config.server.endointsPrefix);
+    app.useGlobalPipes(new ValidationPipe());
+    await app.listen(config.server.port, () => {
+      logger.log(`app listening on port ${config.server.port}`);
+    });
+  } catch (error) {
+    logger.error(error);
+  }
+})();
