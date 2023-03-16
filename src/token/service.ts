@@ -1,11 +1,15 @@
 import jwt from 'jsonwebtoken';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import config from '../config';
-
+import RedisService from '../redis/service';
 type PayloadType = Record<string, never>;
 
 @Injectable()
 class TokenService {
+  constructor(
+    @Inject('TOKEN_REPOSITORY')
+    private redisRepository: RedisService<string>,
+  ) {}
   async asyncSign<P extends object>(
     payload: P,
     secret: string,
@@ -54,9 +58,17 @@ class TokenService {
       expiresIn: config.token.expiresIn.refresh,
     });
 
+    await this.redisRepository.set(
+      '10',
+      refreshToken,
+      config.token.expiresIn.refresh,
+    );
+    const a = await this.redisRepository.get('10');
+    console.log(a);
     return {
       accessToken,
       refreshToken,
+      a,
     };
   }
 

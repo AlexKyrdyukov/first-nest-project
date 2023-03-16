@@ -13,7 +13,7 @@ import config from '../config';
 type EnteredData = Record<string, string>;
 
 @Injectable()
-export class UserService {
+class UserService {
   constructor(
     @Inject('USER_REPOSITORY')
     private userRepository: Repository<User>,
@@ -137,3 +137,5 @@ export class UserService {
     return savedUser;
   }
 }
+
+export default UserService;

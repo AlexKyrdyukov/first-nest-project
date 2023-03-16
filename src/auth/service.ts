@@ -1,4 +1,4 @@
-import { UserService } from './../user/service';
+import UserService from './../user/service';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import User from 'src/db/entities/User';
 import { Repository } from 'typeorm';
@@ -27,7 +27,7 @@ class AuthService {
         });
       }
       this.userService.checkPassword(body.password, user.password);
-      const { refreshToken, accessToken } =
+      const { refreshToken, accessToken, a } =
         await this.tokenService.createTokens(String(user.userId));
       const { password, ...userFromDB } = user;
 
@@ -35,6 +35,7 @@ class AuthService {
         accessToken,
         refreshToken,
         userFromDB,
+        a,
       };
     } catch (error) {
       throw error;
@@ -44,18 +45,28 @@ class AuthService {
   async signUp(body: EnteredData) {
     try {
       const { email } = body;
-      const user = await this.userRepository.findOne({
+      const existedUser = await this.userRepository.findOne({
         where: {
           email,
         },
       });
-      if (user) {
+      if (existedUser) {
         throw new BadRequestException('Error', {
           cause: new Error(),
           description: 'User with this email already exist',
         });
       }
-      return await this.userService.createNewUser(body);
+      const user = await this.userService.createNewUser(body);
+      const { refreshToken, accessToken, a } =
+        await this.tokenService.createTokens(String(user.userId));
+      // const { password, ...userFromDB } = user;
+
+      return {
+        accessToken,
+        refreshToken,
+        user,
+        a,
+      };
     } catch (error) {}
   }
 
