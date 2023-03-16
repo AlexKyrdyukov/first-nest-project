@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
@@ -28,12 +29,11 @@ class UserController {
 
   @Get('me/:userId')
   async findCurrent(@Param() param: EnteredData): Promise<User | null> {
-    return await this.userService.findOne(param);
+    return await this.userService.findById(param);
   }
 
-  @Delete(':id')
+  @Delete(':userId')
   async delete(@Param() param: EnteredData) {
-    // const { userId } = param;
     return this.userService.delete(param);
   }
 

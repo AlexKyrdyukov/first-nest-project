@@ -1,13 +1,11 @@
 import {
   Injectable,
   Inject,
-  Param,
   HttpException,
   BadRequestException,
-  Body,
   HttpStatus,
 } from '@nestjs/common';
-import * as CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js';
 import { Repository } from 'typeorm';
 import User from 'src/db/entities/User';
 import config from '../config';
@@ -21,6 +19,10 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
+  checkIsString(value: string | number | Date): value is string {
+    return (value as string)?.length !== undefined;
+  }
+
   async create(body: EnteredData) {
     try {
       const { email } = body;
@@ -32,10 +34,10 @@ export class UserService {
       if (user) {
         throw new BadRequestException('Error', {
           cause: new Error(),
-          description: 'Entered password invalid',
+          description: 'User with this email already exist',
         });
       }
-      return await this.newUser(body);
+      return await this.createNewUser(body);
     } catch (error) {
       throw error;
     }
@@ -45,8 +47,8 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  async findOne(@Param() param: EnteredData): Promise<User | null> {
-    const { userId } = param;
+  async findById(params: EnteredData): Promise<User | null> {
+    const { userId } = params;
     return await this.userRepository.findOne({
       where: {
         userId: Number(userId),
@@ -54,9 +56,17 @@ export class UserService {
     });
   }
 
-  async delete(@Param() param: EnteredData) {
-    const { id } = param;
-    const user = await this.findOne({ userId: id });
+  async findByEmail(params: EnteredData): Promise<User | null> {
+    const { email } = params;
+    return await this.userRepository.findOne({
+      where: {
+        email,
+      },
+    });
+  }
+
+  async delete(param: EnteredData) {
+    const user = await this.findById(param);
     if (!user) {
       return;
     }
@@ -85,17 +95,18 @@ export class UserService {
     }
   }
 
-  async update(@Body() body: Partial<User>) {
+  async update(body: Partial<User>) {
     const { userId } = body;
-    const updateUser = await this.findOne({ userId: String(userId) });
+    const updateUser = await this.findById({ userId: String(userId) });
     if (!updateUser) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     let newUser: Record<string, string | number | Date> = {};
+
     Object.entries(body).forEach(([key, value]) => {
       let newValue = value;
-      if (key === 'password') {
-        newValue = this.hashPassword(value as string);
+      if (key === 'password' && this.checkIsString(value)) {
+        newValue = this.hashPassword(value);
       }
       newUser = {
         ...updateUser,
@@ -103,19 +114,18 @@ export class UserService {
       };
     });
 
-    await this.userRepository.save(newUser);
-    delete newUser.password;
-    return newUser;
+    const { password, ...savedUser } = await this.userRepository.save(newUser);
+    return savedUser;
   }
 
-  async newUser(params: Partial<User>) {
+  async createNewUser(params: Partial<User>) {
     let user: Partial<User> = new User();
 
     Object.entries(params).forEach(([key, value]) => {
       let currentValue = value;
 
-      if (key === 'password') {
-        currentValue = this.hashPassword(value as string);
+      if (key === 'password' && this.checkIsString(value)) {
+        currentValue = this.hashPassword(value);
       }
       user = {
         ...user,
@@ -123,8 +133,7 @@ export class UserService {
       };
     });
 
-    await this.userRepository.save(user);
-    delete user.password;
-    return user;
+    const { password, ...savedUser } = await this.userRepository.save(user);
+    return savedUser;
   }
 }
