@@ -17,13 +17,13 @@ class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('sign-in')
-  async signIn(@Body() body: EnteredData) {
-    return await this.authService.signIn(body);
+  async signIn(@Body() body: EnteredData, @Headers() headers: EnteredData) {
+    return await this.authService.signIn(body, headers);
   }
 
   @Post('sign-up')
-  async signUp(@Body() body: EnteredData) {
-    return await this.authService.signUp(body);
+  async signUp(@Body() body: EnteredData, @Headers() headers: EnteredData) {
+    return await this.authService.signUp(body, headers);
   }
 
   @Get('me')

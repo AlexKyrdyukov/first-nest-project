@@ -5,7 +5,7 @@ import {
   BadRequestException,
   HttpStatus,
 } from '@nestjs/common';
-import CryptoJS from 'crypto-js';
+import * as CryptoJS from 'crypto-js';
 import { Repository } from 'typeorm';
 import User from 'src/db/entities/User';
 import config from '../config';
@@ -131,6 +131,7 @@ class UserService {
         ...user,
         [key]: currentValue,
       };
+      console.log(136);
     });
 
     const { password, ...savedUser } = await this.userRepository.save(user);

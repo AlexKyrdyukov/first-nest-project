@@ -17,27 +17,32 @@ type EnteredData = Record<string, string>;
 class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('all')
-  async findAll(): Promise<User[]> {
-    return await this.userService.findAll();
-  }
+  // @Get('all')
+  // async findAll(): Promise<User[]> {
+  //   return await this.userService.findAll();
+  // }
 
-  @Post('create')
-  async create(@Body() body: EnteredData): Promise<Partial<User>> {
-    return await this.userService.create(body);
-  }
+  // @Post('create')
+  // async create(@Body() body: EnteredData): Promise<Partial<User>> {
+  //   return await this.userService.create(body);
+  // }
 
-  @Get('me/:userId')
-  async findCurrent(@Param() param: EnteredData): Promise<User | null> {
-    return await this.userService.findById(param);
-  }
+  // @Get('me/:userId')
+  // async findCurrent(@Param() param: EnteredData): Promise<User | null> {
+  //   return await this.userService.findById(param);
+  // }
 
   @Delete(':userId')
   async delete(@Param() param: EnteredData) {
     return this.userService.delete(param);
   }
 
-  @Patch('update')
+  @Patch(':userId/password')
+  async patchPassword(@Body() body: EnteredData) {
+    return this.userService.update(body);
+  }
+
+  @Patch(':userId')
   async patch(@Body() body: EnteredData) {
     return this.userService.update(body);
   }

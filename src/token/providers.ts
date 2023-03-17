@@ -2,9 +2,9 @@ import RedisService from '../redis/service';
 
 const tokenProviders = [
   {
-    provide: 'TOKEN_REPOSITORY',
+    provide: 'REDIS_SERVICE',
     useFactory: (redisClient: RedisService<string>) => redisClient,
-    inject: ['REDIS_SOURCE'],
+    inject: ['DATA_SOURCE_REDIS'],
   },
 ];
 

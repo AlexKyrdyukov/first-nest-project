@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import config from '../config';
 import RedisService from '../redis/service';
@@ -7,7 +7,7 @@ type PayloadType = Record<string, never>;
 @Injectable()
 class TokenService {
   constructor(
-    @Inject('TOKEN_REPOSITORY')
+    @Inject('REDIS_SERVICE')
     private redisRepository: RedisService<string>,
   ) {}
   async asyncSign<P extends object>(
@@ -49,7 +49,7 @@ class TokenService {
     });
   }
 
-  async createTokens(userId: string) {
+  async createTokens(userId: string, deviceId: string) {
     const accessToken = await this.asyncSign({ userId }, config.token.secret, {
       expiresIn: config.token.expiresIn.access,
     });
@@ -57,13 +57,17 @@ class TokenService {
     const refreshToken = await this.asyncSign({ userId }, config.token.secret, {
       expiresIn: config.token.expiresIn.refresh,
     });
-
+    console.log(60);
+    console.log(this.redisRepository);
     await this.redisRepository.set(
-      '10',
+      'refreshToken',
+      deviceId,
       refreshToken,
       config.token.expiresIn.refresh,
     );
-    const a = await this.redisRepository.get('10');
+    console.log(66);
+
+    const a = await this.redisRepository.get('refreshToken', deviceId);
     console.log(a);
     return {
       accessToken,
