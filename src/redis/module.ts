@@ -4,7 +4,7 @@ import RedisService from './service';
 
 @Module({
   providers: [...redisProviders, RedisService],
-  exports: [...redisProviders],
+  exports: [...redisProviders, RedisService],
 })
 class RedisModule {}
 

@@ -87,7 +87,6 @@ class UserService {
         config.hash.salt,
       ).toString() === oldPassword;
     if (!verification) {
-      // throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
       throw new BadRequestException('Error', {
         cause: new Error(),
         description: 'Entered password invalid',

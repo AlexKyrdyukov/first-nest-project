@@ -1,4 +1,5 @@
-import ms from 'ms';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ms = require('ms');
 
 import { Injectable } from '@nestjs/common';
 import { redisClient } from './connect';
@@ -31,19 +32,16 @@ class RedisService<T_DataType> {
 
     return parsedData;
   };
-
   set = async (
     rootKey: string,
     nestedKey: string,
     value: T_DataType,
-    expiresIn?: string,
+    expiresIn: string,
   ) => {
     const key = this.createKey(rootKey, nestedKey);
-
     const strinfigyedValue = JSON.stringify(value);
 
     const expiresInInString = expiresIn; // || this.defaultExpiresIn;
-
     const expiresInInNumber = expiresInInString
       ? ms(expiresInInString)
       : undefined;

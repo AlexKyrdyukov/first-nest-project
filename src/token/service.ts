@@ -1,15 +1,12 @@
 import * as jwt from 'jsonwebtoken';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import config from '../config';
 import RedisService from '../redis/service';
 type PayloadType = Record<string, never>;
 
 @Injectable()
 class TokenService {
-  constructor(
-    @Inject('REDIS_SERVICE')
-    private redisRepository: RedisService<string>,
-  ) {}
+  constructor(private redisRepository: RedisService<string>) { }
   async asyncSign<P extends object>(
     payload: P,
     secret: string,
@@ -30,19 +27,21 @@ class TokenService {
     secret: string,
     options: jwt.VerifyOptions,
   ) {
-    return new Promise<P>((resolve) => {
+    return new Promise<P>((resolve, reject) => {
       jwt.verify(token, secret, options, (error, data) => {
         if (error) {
           if (error.message === 'jwt expired') {
-            throw new BadRequestException('Error', {
-              cause: new Error(),
-              description: 'Entered password invalid',
-            });
+            throw new HttpException(
+              'User unauthorized',
+              HttpStatus.UNAUTHORIZED,
+            ); //user unaunthorized(toke expired)
           }
-          throw new BadRequestException('Error', {
-            cause: new Error(),
-            description: 'Entered password invalid',
-          });
+          return reject(
+            new HttpException(
+              'User unknown type authorized',
+              HttpStatus.UNAUTHORIZED,
+            ), //user unaunthorized (unknown type authorization)
+          );
         }
         return resolve(data as P);
       });
@@ -59,20 +58,17 @@ class TokenService {
     });
     console.log(60);
     console.log(this.redisRepository);
+
     await this.redisRepository.set(
       'refreshToken',
       deviceId,
       refreshToken,
       config.token.expiresIn.refresh,
     );
-    console.log(66);
 
-    const a = await this.redisRepository.get('refreshToken', deviceId);
-    console.log(a);
     return {
       accessToken,
       refreshToken,
-      a,
     };
   }
 
@@ -82,6 +78,19 @@ class TokenService {
       config.token.secret,
       { complete: false },
     );
+    return payload;
+  }
+
+  async verifyRefresh(deviceId: string, token: string) {
+    const existenToken = await this.redisRepository.get(
+      'refreshToken',
+      deviceId,
+    );
+    console.log(existenToken);
+    if (token !== existenToken || !existenToken) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN); //user dont login please login
+    }
+    const payload = await this.verifyToken(token);
     return payload;
   }
 }

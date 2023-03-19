@@ -1,16 +1,30 @@
+import { ApiProperty } from '@nestjs/swagger';
 import * as typeorm from 'typeorm';
 
 @typeorm.Entity()
 class User {
+  @ApiProperty({ example: '1', description: 'unique identificator' })
   @typeorm.PrimaryGeneratedColumn()
   userId: number;
 
+  @ApiProperty({
+    example: '2023-03-17T19:04:21.913Z',
+    description: 'date create user',
+  })
   @typeorm.CreateDateColumn({ select: false })
   createdDate: Date;
 
+  @ApiProperty({
+    example: '2023-03-17T19:04:21.913Z',
+    description: 'date update user',
+  })
   @typeorm.UpdateDateColumn({ select: false })
   updatedDate: Date;
 
+  @ApiProperty({
+    example: '2023-03-17T19:04:21.913Z | null',
+    description: 'date delete user',
+  })
   @typeorm.DeleteDateColumn({ select: false })
   deletedDate: Date;
 
@@ -18,9 +32,17 @@ class User {
   @typeorm.Column({ unique: false, nullable: false, type: 'varchar', select: false })
   password: string;
 
+  @ApiProperty({
+    example: 'Alex Alexov',
+    description: 'full name user',
+  })
   @typeorm.Column({ unique: false, nullable: true, type: 'varchar' })
   fullName: string;
 
+  @ApiProperty({
+    example: 'user@email.ru',
+    description: 'user post address',
+  })
   @typeorm.Column({ unique: true, nullable: false, type: 'varchar' })
   email: string;
 }
