@@ -1,5 +1,11 @@
 import UserService from './../user/service';
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import TokenService from '../token/service';
 import { Repository } from 'typeorm';
 import User from '../db/entities/User';
@@ -14,16 +20,18 @@ class AuthService {
     private userService: UserService,
     private tokenService: TokenService,
     @Inject('USER_REPOSITORY') private userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   async signIn(body: SignInUserDto, headers: EnteredData) {
-    console.log(headers);
+    console.log(headers, body);
     const deviceId = headers.device_id;
     const { email } = body;
-    // const user = await this.userService.findByEmail({ email });
-    const user = await this.userRepository.findOne({
-      where: { email },
-    });
+
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
 
     if (!user) {
       throw new BadRequestException('Error', {
@@ -32,6 +40,7 @@ class AuthService {
       });
     }
     this.userService.checkPassword(body.password, user.password);
+
     const { refreshToken, accessToken } = await this.tokenService.createTokens(
       String(user.userId),
       deviceId,
@@ -41,7 +50,7 @@ class AuthService {
     return {
       accessToken,
       refreshToken,
-      userFromDB,
+      user: userFromDB,
     };
   }
 
@@ -74,7 +83,6 @@ class AuthService {
   }
 
   async refresh(dto: RefreshTokenDto, deviceId: DeviceIdDto['device_id']) {
-
     const [auth, token] = dto.refreshToken?.split(' ');
 
     if (!deviceId || auth !== 'Bearer') {

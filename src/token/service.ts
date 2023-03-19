@@ -1,12 +1,12 @@
 import * as jwt from 'jsonwebtoken';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import config from '../config';
 import RedisService from '../redis/service';
-type PayloadType = Record<string, never>;
+import config from '../config';
 
+type PayloadType = Record<string, never>;
 @Injectable()
 class TokenService {
-  constructor(private redisRepository: RedisService<string>) { }
+  constructor(private redisRepository: RedisService<string>) {}
   async asyncSign<P extends object>(
     payload: P,
     secret: string,
@@ -56,8 +56,6 @@ class TokenService {
     const refreshToken = await this.asyncSign({ userId }, config.token.secret, {
       expiresIn: config.token.expiresIn.refresh,
     });
-    console.log(60);
-    console.log(this.redisRepository);
 
     await this.redisRepository.set(
       'refreshToken',
@@ -86,7 +84,6 @@ class TokenService {
       'refreshToken',
       deviceId,
     );
-    console.log(existenToken);
     if (token !== existenToken || !existenToken) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN); //user dont login please login
     }

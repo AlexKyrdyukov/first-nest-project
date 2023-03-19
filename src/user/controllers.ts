@@ -3,42 +3,31 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
-  Headers,
   Param,
   Patch,
-  Post,
+  UseGuards,
 } from '@nestjs/common';
-import User from 'src/db/entities/User';
+import { User } from './user.decorator';
+import UserEntity from 'src/db/entities/User';
+
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/auth-guard';
 
 type EnteredData = Record<string, string>;
 
 @ApiTags('user api')
 @Controller('user')
+@UseGuards(AuthGuard)
 class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Get('all')
-  // async findAll(): Promise<User[]> {
-  //   return await this.userService.findAll();
-  // }
-
-  // @Post('create')
-  // async create(@Body() body: EnteredData): Promise<Partial<User>> {
-  //   return await this.userService.create(body);
-  // }
-
-  // @Get('me/:userId')
-  // async findCurrent(@Param() param: EnteredData): Promise<User | null> {
-  //   return await this.userService.findById(param);
-  // }
   @ApiOperation({ summary: 'delete user' })
   @ApiResponse({ status: 204 })
   @Delete(':userId')
   async delete(@Param() param: EnteredData) {
     return this.userService.delete(param);
   }
+
   @ApiOperation({ summary: 'update user password ' })
   @ApiResponse({ status: 200 })
   @Patch(':userId/password')
@@ -47,7 +36,7 @@ class UserController {
   }
 
   @ApiOperation({ summary: 'update all user properties except password ' })
-  @ApiResponse({ status: 200, type: User })
+  @ApiResponse({ status: 200, type: UserEntity })
   @Patch(':userId')
   async patch(@Body() body: EnteredData) {
     return this.userService.update(body);
