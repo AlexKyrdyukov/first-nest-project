@@ -5,12 +5,6 @@ export const refreshSchema = Joi.object({
   refreshToken: Joi.string().required(),
 });
 
-// export const refreshSchema = {
-//   body: {
-//     refreshToken: Joi.string().required(),
-//   },
-// };
-
 export class DeviceIdDto {
   @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.',

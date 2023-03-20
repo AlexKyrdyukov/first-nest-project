@@ -6,15 +6,6 @@ import { redisClient } from './connect';
 
 @Injectable()
 class RedisService<T_DataType> {
-  // rootKey: string;
-
-  // defaultExpiresIn?: string;
-
-  // constructor(rootKey: string, defaultExpiresIn?: string) {
-  //   this.rootKey = rootKey;
-  //   this.defaultExpiresIn = defaultExpiresIn;
-  // }
-
   createKey = (rootKey: string, nestedKey: string) => {
     return `${rootKey}:${nestedKey}`;
   };

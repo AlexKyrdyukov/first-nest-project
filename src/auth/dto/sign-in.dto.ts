@@ -9,13 +9,6 @@ export const signInSchema = Joi.object({
   abortEarly: false,
 });
 
-// export const signInSchema = {
-//   body: {
-//     email: Joi.string().email().trim().required(),
-//     password: Joi.string().min(3).max(10).trim().required(),
-//   },
-// };
-
 class SignInUserDto {
   @ApiProperty({ example: 'user@email.ru', description: 'email post address' })
   email: string;

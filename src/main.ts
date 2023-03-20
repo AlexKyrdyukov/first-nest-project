@@ -1,10 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 
+import {
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
+
 import logger from './utils/logger';
+
 import { AppModule } from './app.module';
+import { appMiddleware } from './app.middleware';
 import config from './config';
-import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 
 (async () => {
   try {
@@ -26,6 +33,7 @@ import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/
     await app.listen(config.server.port, () => {
       logger.log(`app listening on port ${config.server.port}`);
     });
+    app.use(appMiddleware);
   } catch (error) {
     logger.error(error);
   }

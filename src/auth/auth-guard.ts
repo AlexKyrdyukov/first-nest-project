@@ -19,7 +19,6 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const { headers, params } = request;
     const { authorization } = headers;
-    const { userId } = params;
     if (!authorization) {
       return false;
     }
@@ -27,11 +26,7 @@ export class AuthGuard implements CanActivate {
     if (auth !== 'Bearer') {
       return false;
     }
-    const payload = await this.tokenService.verifyToken(token);
-    console.log(userId, 25);
-    if (userId !== payload.userId) {
-      return false;
-    }
+    const { userId } = await this.tokenService.verifyToken(token);
 
     const user = await this.userRepository
       .createQueryBuilder('user')

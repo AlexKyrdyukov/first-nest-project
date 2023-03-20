@@ -1,4 +1,3 @@
-import UserService from './../user/service';
 import {
   BadRequestException,
   HttpException,
@@ -7,23 +6,22 @@ import {
   Injectable,
 } from '@nestjs/common';
 import TokenService from '../token/service';
+import UserService from '../user/service';
+
 import { Repository } from 'typeorm';
-import User from '../db/entities/User';
+import UserEntity from '../db/entities/User';
 import RefreshTokenDto, { DeviceIdDto } from './dto/refresh.dto';
 import SignInUserDto from './dto/sign-in.dto';
-
-type EnteredData = Record<string, string>;
 
 @Injectable()
 class AuthService {
   constructor(
     private userService: UserService,
     private tokenService: TokenService,
-    @Inject('USER_REPOSITORY') private userRepository: Repository<User>,
+    @Inject('USER_REPOSITORY') private userRepository: Repository<UserEntity>,
   ) {}
 
-  async signIn(body: SignInUserDto, headers: EnteredData) {
-    console.log(headers, body);
+  async signIn(body: SignInUserDto, headers: DeviceIdDto) {
     const deviceId = headers.device_id;
     const { email } = body;
 
@@ -54,9 +52,8 @@ class AuthService {
     };
   }
 
-  async signUp(body: SignInUserDto, headers: EnteredData) {
+  async signUp(body: SignInUserDto, headers: DeviceIdDto) {
     const deviceId = headers.device_id;
-    console.log(47, deviceId);
     const { email } = body;
     const existedUser = await this.userService.findByEmail({ email });
     if (existedUser) {
@@ -78,15 +75,15 @@ class AuthService {
     };
   }
 
-  async getMe() {
-    return console.log('event');
-  }
-
   async refresh(dto: RefreshTokenDto, deviceId: DeviceIdDto['device_id']) {
+    console.log(dto);
     const [auth, token] = dto.refreshToken?.split(' ');
 
     if (!deviceId || auth !== 'Bearer') {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN); //unknown authorization type
+      throw new HttpException(
+        'user please authorization',
+        HttpStatus.UNAUTHORIZED,
+      ); //unknown authorization type
     }
     const { userId } = await this.tokenService.verifyRefresh(deviceId, token);
 

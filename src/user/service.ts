@@ -7,8 +7,9 @@ import {
 } from '@nestjs/common';
 import * as CryptoJS from 'crypto-js';
 import { Repository } from 'typeorm';
-import User from 'src/db/entities/User';
+import UserEntity from '../db/entities/User';
 import config from '../config';
+import DeleteUserDto from './dto/delete-user-dto';
 
 type EnteredData = Record<string, string>;
 
@@ -16,7 +17,7 @@ type EnteredData = Record<string, string>;
 class UserService {
   constructor(
     @Inject('USER_REPOSITORY')
-    private userRepository: Repository<User>,
+    private userRepository: Repository<UserEntity>,
   ) {}
 
   checkIsString(value: string | number | Date): value is string {
@@ -43,11 +44,11 @@ class UserService {
     }
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserEntity[]> {
     return await this.userRepository.find();
   }
 
-  async findById(params: EnteredData): Promise<User | null> {
+  async findById(params: EnteredData): Promise<UserEntity | null> {
     const { userId } = params;
     return await this.userRepository.findOne({
       where: {
@@ -56,7 +57,7 @@ class UserService {
     });
   }
 
-  async findByEmail(params: EnteredData): Promise<User | null> {
+  async findByEmail(params: EnteredData): Promise<UserEntity | null> {
     const { email } = params;
     return await this.userRepository.findOne({
       where: {
@@ -65,10 +66,10 @@ class UserService {
     });
   }
 
-  async delete(param: EnteredData) {
-    const user = await this.findById(param);
-    if (!user) {
-      return;
+  async delete(param: DeleteUserDto, user: UserEntity) {
+    const { userId } = param;
+    if (userId !== user.userId) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     await this.userRepository.remove(user);
   }
@@ -94,31 +95,28 @@ class UserService {
     }
   }
 
-  async update(body: Partial<User>) {
-    const { userId } = body;
-    const updateUser = await this.findById({ userId: String(userId) });
-    if (!updateUser) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
-    let newUser: Record<string, string | number | Date> = {};
+  async update(body: Partial<UserEntity>, user: UserEntity) {
+    let updateUser = user;
 
     Object.entries(body).forEach(([key, value]) => {
       let newValue = value;
-      if (key === 'password' && this.checkIsString(value)) {
-        newValue = this.hashPassword(value);
+      if (key === 'password') {
+        newValue = this.hashPassword(value as string);
       }
-      newUser = {
+      updateUser = {
         ...updateUser,
         [key]: newValue,
       };
     });
 
-    const { password, ...savedUser } = await this.userRepository.save(newUser);
+    const { password, ...savedUser } = await this.userRepository.save(
+      updateUser,
+    );
     return savedUser;
   }
 
-  async createNewUser(params: Partial<User>) {
-    let user: Partial<User> = new User();
+  async createNewUser(params: Partial<UserEntity>) {
+    let user: Partial<UserEntity> = new UserEntity();
 
     Object.entries(params).forEach(([key, value]) => {
       let currentValue = value;
@@ -130,7 +128,6 @@ class UserService {
         ...user,
         [key]: currentValue,
       };
-      console.log(136);
     });
 
     const { password, ...savedUser } = await this.userRepository.save(user);

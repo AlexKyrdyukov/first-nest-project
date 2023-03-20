@@ -34,7 +34,7 @@ class User {
 
   @ApiProperty({
     example: 'Alex Alexov',
-    description: 'full name user',
+    description: 'full name user | null',
   })
   @typeorm.Column({ unique: false, nullable: true, type: 'varchar' })
   fullName: string;
@@ -45,6 +45,13 @@ class User {
   })
   @typeorm.Column({ unique: true, nullable: false, type: 'varchar' })
   email: string;
+
+  @ApiProperty({
+    example: 'user@email.ru',
+    description: 'links on user photo | null',
+  })
+  @typeorm.Column({ unique: false, nullable: true, type: 'varchar' })
+  avatar?: string;
 }
 
 export default User;
