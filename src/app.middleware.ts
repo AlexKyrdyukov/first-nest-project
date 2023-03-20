@@ -8,6 +8,7 @@ export const appMiddleware = (
 ) => {
   try {
     const { headers } = req;
+    console.log(headers);
     const deviceId = headers.device_id;
     if (!deviceId || !deviceId?.length) {
       throw new HttpException(

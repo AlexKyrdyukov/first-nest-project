@@ -22,6 +22,7 @@ class AuthService {
   ) {}
 
   async signIn(body: SignInUserDto, headers: DeviceIdDto) {
+    console.log('event');
     const deviceId = headers.device_id;
     const { email } = body;
 

@@ -15,7 +15,7 @@ import config from './config';
 
 (async () => {
   try {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, { cors: true });
     app.setGlobalPrefix(config.server.endointsPrefix);
     app.useGlobalPipes(new ValidationPipe());
     const swaggerConfig = new DocumentBuilder()
