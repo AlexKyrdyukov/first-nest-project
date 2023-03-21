@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import TokenService from '../token/service';
-import { AuthGuard } from '../auth/auth-guard';
+
+import UserService from './service';
+import userProviders from './providers';
 import DatabaseModule from '../db/module';
 import UserController from './controllers';
-import userProviders from './providers';
-import UserService from './service';
+import TokenService from '../token/service';
 import RedisService from '../redis/service';
+import { AuthGuard } from '../auth/auth-guard';
 
 @Module({
   imports: [DatabaseModule],

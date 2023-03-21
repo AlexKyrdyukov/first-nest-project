@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 
 import {
   DocumentBuilder,
@@ -15,9 +14,8 @@ import config from './config';
 
 (async () => {
   try {
-    const app = await NestFactory.create(AppModule, { cors: true });
+    const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix(config.server.endointsPrefix);
-    app.useGlobalPipes(new ValidationPipe());
     const swaggerConfig = new DocumentBuilder()
       .setTitle('Pokemon server application')
       .setDescription('Documentation REST API')
@@ -30,10 +28,10 @@ import config from './config';
     };
     const document = SwaggerModule.createDocument(app, swaggerConfig, options);
     SwaggerModule.setup('/api/docs', app, document);
+    app.use(appMiddleware);
     await app.listen(config.server.port, () => {
       logger.log(`app listening on port ${config.server.port}`);
     });
-    app.use(appMiddleware);
   } catch (error) {
     logger.error(error);
   }

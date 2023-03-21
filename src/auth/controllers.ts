@@ -1,4 +1,3 @@
-import AuthService from './service';
 import {
   Body,
   Controller,
@@ -8,27 +7,33 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
+
 import RefreshTokenDto, {
   DeviceIdDto,
   RefreshRouteResponse,
 } from './dto/refresh.dto';
+
 import {
   ApiBody,
+  ApiHeader,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import SignInUserDto from './dto/sign-in.dto';
+
+import AuthService from './service';
+import { AuthGuard } from './auth-guard';
 import UserEntity from '../db/entities/User';
+import SignInUserDto from './dto/sign-in.dto';
+import { User } from 'src/user/user.decorator';
+import { refreshSchema } from './dto/refresh.dto';
 import { JoiValidationPipe } from '../pipes/validation-pipe';
 import { signInSchema, ReturnSignInDto } from './dto/sign-in.dto';
-import { refreshSchema } from './dto/refresh.dto';
-import { AuthGuard } from './auth-guard';
-import { User } from 'src/user/user.decorator';
 
 @ApiTags('auth api')
 @Controller('auth')
+@ApiHeader({ name: 'deviceId: string' })
 class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -38,8 +43,10 @@ class AuthController {
   @ApiBody({ type: SignInUserDto })
   @ApiResponse({ status: 200, type: ReturnSignInDto })
   @Post('sign-in')
-  @UsePipes(new JoiValidationPipe(signInSchema))
-  async signIn(@Body() dto: SignInUserDto, @Headers() headers: DeviceIdDto) {
+  async signIn(
+    @Body(new JoiValidationPipe(signInSchema)) dto: SignInUserDto,
+    @Headers() headers: DeviceIdDto,
+  ) {
     return await this.authService.signIn(dto, headers);
   }
 
@@ -47,8 +54,10 @@ class AuthController {
   @ApiBody({ type: SignInUserDto })
   @ApiResponse({ status: 201, type: ReturnSignInDto })
   @Post('sign-up')
-  @UsePipes(new JoiValidationPipe(signInSchema))
-  async signUp(@Body() dto: SignInUserDto, @Headers() headers: DeviceIdDto) {
+  async signUp(
+    @Body(new JoiValidationPipe(signInSchema)) dto: SignInUserDto,
+    @Headers() headers: DeviceIdDto,
+  ) {
     console.log(dto);
     return await this.authService.signUp(dto, headers);
   }

@@ -8,14 +8,15 @@ export const appMiddleware = (
 ) => {
   try {
     const { headers } = req;
-    console.log(headers);
+
     const deviceId = headers.device_id;
-    if (!deviceId || !deviceId?.length) {
+    if (!deviceId && !deviceId?.length) {
       throw new HttpException(
         'Unknown type request please enter in application and repeat request',
         HttpStatus.UNAUTHORIZED,
       );
     }
+
     next();
   } catch (error) {
     next(error);

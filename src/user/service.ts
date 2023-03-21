@@ -7,9 +7,11 @@ import {
 } from '@nestjs/common';
 import * as CryptoJS from 'crypto-js';
 import { Repository } from 'typeorm';
+
 import UserEntity from '../db/entities/User';
 import config from '../config';
 import DeleteUserDto from './dto/delete-user-dto';
+import UpdateUserPasswordDto from './dto/update-user-password.dto';
 
 type EnteredData = Record<string, string>;
 
@@ -93,6 +95,12 @@ class UserService {
         description: 'Entered password invalid',
       });
     }
+  }
+
+  async updateUserPass(body: UpdateUserPasswordDto, user: UserEntity) {
+    const { password, newPassword } = body;
+    this.checkPassword(password, user.password);
+    this.update({ password: newPassword }, user);
   }
 
   async update(body: Partial<UserEntity>, user: UserEntity) {

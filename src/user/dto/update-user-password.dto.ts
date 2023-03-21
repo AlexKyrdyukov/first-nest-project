@@ -2,8 +2,10 @@ import * as Joi from 'joi';
 import { ApiProperty } from '@nestjs/swagger';
 
 export const updateUserPasswordSchema = Joi.object({
-  pasword: Joi.string().trim().min(3).max(10).required(),
+  password: Joi.string().trim().min(3).max(10).required(),
   newPassword: Joi.string().trim().min(3).max(10).required(),
+}).options({
+  abortEarly: false,
 });
 
 class UpdateUserPasswordDto {

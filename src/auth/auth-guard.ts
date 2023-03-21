@@ -4,9 +4,10 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
+import { Repository } from 'typeorm';
+
 import User from '../db/entities/User';
 import TokenService from '../token/service';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,6 +19,7 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const { headers, params } = request;
+    const id = params.userId;
     const { authorization } = headers;
     if (!authorization) {
       return false;
@@ -27,6 +29,10 @@ export class AuthGuard implements CanActivate {
       return false;
     }
     const { userId } = await this.tokenService.verifyToken(token);
+
+    if (id && id !== userId) {
+      return false;
+    }
 
     const user = await this.userRepository
       .createQueryBuilder('user')

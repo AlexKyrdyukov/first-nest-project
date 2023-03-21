@@ -1,15 +1,12 @@
-import UserService from './service';
 import {
   Body,
   Controller,
   Delete,
   Param,
   Patch,
+  Post,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
-import { User } from './user.decorator';
-import UserEntity from 'src/db/entities/User';
 
 import {
   ApiBody,
@@ -17,30 +14,40 @@ import {
   ApiResponse,
   ApiTags,
   ApiParam,
+  ApiHeader,
 } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/auth-guard';
-import UpdateUserDto, { updateUserSchema } from './dto/update-user-data.dto';
-import { JoiValidationPipe } from './../pipes/validation-pipe';
+
 import UpdateUserPasswordDto, {
   updateUserPasswordSchema,
 } from './dto/update-user-password.dto';
+import UserService from './service';
+import { User } from './user.decorator';
+import UserEntity from '../db/entities/User';
+import { AuthGuard } from '../auth/auth-guard';
+import UserParamDto from './dto/user-param-dto';
+import { JoiValidationPipe } from './../pipes/validation-pipe';
 import DeleteUserDto, { deleteUserSchema } from './dto/delete-user-dto';
+import UpdateUserDto, { updateUserSchema } from './dto/update-user-data.dto';
+import SetAvatarUserDto, { setAvatarUserSchema } from './dto/set-avatar-dto';
 
 @ApiTags('user api')
 @Controller('user')
+@ApiHeader({ name: 'deviceId: string' })
 @UseGuards(AuthGuard)
 class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOperation({ summary: 'delete user' })
   @ApiParam({
-    type: DeleteUserDto,
+    type: UserParamDto,
     name: 'userId',
   })
   @ApiResponse({ status: 204 })
   @Delete(':userId')
-  @UsePipes(new JoiValidationPipe(deleteUserSchema))
-  async delete(@Param() param: DeleteUserDto, @User() userDto: UserEntity) {
+  async delete(
+    @Param(new JoiValidationPipe(deleteUserSchema)) param: DeleteUserDto,
+    @User() userDto: UserEntity,
+  ) {
     return this.userService.delete(param, userDto);
   }
 
@@ -49,17 +56,17 @@ class UserController {
     type: UpdateUserPasswordDto,
   })
   @ApiParam({
-    type: DeleteUserDto,
+    type: UserParamDto,
     name: 'userId',
   })
   @ApiResponse({ status: 200 })
   @Patch(':userId/password')
-  @UsePipes(new JoiValidationPipe(updateUserPasswordSchema))
-  async patchPassword(
-    @Body() body: UpdateUserPasswordDto,
+  async patchUserPassword(
+    @Body(new JoiValidationPipe(updateUserPasswordSchema))
+    body: UpdateUserPasswordDto,
     @User() userDto: UserEntity,
   ) {
-    return this.userService.update(body, userDto);
+    return this.userService.updateUserPass(body, userDto);
   }
 
   @ApiOperation({ summary: 'update all user properties except password ' })
@@ -67,13 +74,32 @@ class UserController {
     type: UpdateUserDto,
   })
   @ApiParam({
-    type: DeleteUserDto,
+    type: UserParamDto,
     name: 'userId',
   })
   @ApiResponse({ status: 200, type: UserEntity })
   @Patch(':userId')
-  @UsePipes(new JoiValidationPipe(updateUserSchema))
-  async patch(@Body() body: UpdateUserDto, @User() userDto: UserEntity) {
+  async patchUserData(
+    @Body(new JoiValidationPipe(updateUserSchema)) body: UpdateUserDto,
+    @User() userDto: UserEntity,
+  ) {
+    return this.userService.update(body, userDto);
+  }
+
+  @ApiOperation({ summary: 'set user avatar' })
+  @ApiBody({
+    type: SetAvatarUserDto,
+  })
+  @ApiParam({
+    type: UserParamDto,
+    name: 'userId',
+  })
+  @ApiResponse({ status: 200, type: UserEntity })
+  @Post(':userId/avatar')
+  async stUserAvatar(
+    @Body(new JoiValidationPipe(setAvatarUserSchema)) body: SetAvatarUserDto,
+    @User() userDto: UserEntity,
+  ) {
     return this.userService.update(body, userDto);
   }
 }

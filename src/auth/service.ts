@@ -5,13 +5,14 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import TokenService from '../token/service';
-import UserService from '../user/service';
-
 import { Repository } from 'typeorm';
+
+import UserService from '../user/service';
+import TokenService from '../token/service';
+
 import UserEntity from '../db/entities/User';
-import RefreshTokenDto, { DeviceIdDto } from './dto/refresh.dto';
 import SignInUserDto from './dto/sign-in.dto';
+import RefreshTokenDto, { DeviceIdDto } from './dto/refresh.dto';
 
 @Injectable()
 class AuthService {
@@ -77,7 +78,6 @@ class AuthService {
   }
 
   async refresh(dto: RefreshTokenDto, deviceId: DeviceIdDto['device_id']) {
-    console.log(dto);
     const [auth, token] = dto.refreshToken?.split(' ');
 
     if (!deviceId || auth !== 'Bearer') {

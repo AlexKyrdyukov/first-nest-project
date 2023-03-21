@@ -6,7 +6,7 @@ export const deleteUserSchema = Joi.object({
 });
 
 class DeleteUserDto {
-  @ApiProperty({ example: '24', description: 'user uniq identificator' })
+  @ApiProperty({ example: 24, description: 'user uniq identificator' })
   userId: number;
 }
 

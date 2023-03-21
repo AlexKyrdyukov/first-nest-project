@@ -4,8 +4,9 @@ import { ApiProperty } from '@nestjs/swagger';
 export const updateUserSchema = Joi.object({
   email: Joi.string().trim().email(),
   fullName: Joi.string().trim().min(3).max(20),
+}).options({
+  abortEarly: false,
 });
-
 class UpdateUserDto {
   @ApiProperty({ example: 'user@email.ru', description: 'email post address' })
   readonly email?: string;

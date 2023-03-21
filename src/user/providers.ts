@@ -1,4 +1,3 @@
-// import dataSource from 'src/db/dataSourse';
 import { DataSource } from 'typeorm';
 
 import User from '../db/entities/User';
