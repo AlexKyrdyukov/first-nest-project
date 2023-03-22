@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { Logger } from '@nestjs/common';
 
 import {
   DocumentBuilder,
@@ -6,12 +7,9 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 
-import logger from './utils/logger';
-
 import { AppModule } from './app.module';
 import { appMiddleware } from './app.middleware';
 import config from './config';
-
 (async () => {
   try {
     const app = await NestFactory.create(AppModule);
@@ -34,9 +32,9 @@ import config from './config';
     SwaggerModule.setup('/api/docs', app, document);
     app.use(appMiddleware);
     await app.listen(config.server.port, () => {
-      logger.log(`app listening on port ${config.server.port}`);
+      Logger.log(`app listening on port ${config.server.port}`);
     });
   } catch (error) {
-    logger.error(error);
+    Logger.error(error);
   }
 })();

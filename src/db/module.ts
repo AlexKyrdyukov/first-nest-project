@@ -1,18 +1,6 @@
-// import { Module } from '@nestjs/common';
-// import { databaseProviders } from '../db/providers';
-
-// @Module({
-//   providers: [...databaseProviders],
-//   exports: [...databaseProviders],
-// })
-// class DatabaseModule {}
-
-// export default DatabaseModule;
-
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-// import { databaseProviders } from '../db/providers';
 import * as path from 'path';
 
 @Module({
@@ -31,6 +19,7 @@ import * as path from 'path';
         synchronize: false,
         migrations: [path.normalize(`${__dirname}/migrations/*.{ts,js}`)],
         logging: false,
+        autoLoadEntities: true,
       }),
     }),
   ],

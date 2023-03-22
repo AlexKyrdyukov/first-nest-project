@@ -49,6 +49,7 @@ export class AuthGuard implements CanActivate {
       .createQueryBuilder('user')
       .where('user.userId = :userId', { userId })
       .addSelect('user.password')
+      .addSelect('user.salt')
       .getOne();
 
     request.user = user;

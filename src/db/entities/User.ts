@@ -32,6 +32,10 @@ class User {
   @typeorm.Column({ unique: false, nullable: false, type: 'varchar', select: false })
   password: string;
 
+  // eslint-disable-next-line prettier/prettier
+  @typeorm.Column({ unique: false, nullable: false, type: 'varchar', select: false })
+  salt: string;
+
   @ApiProperty({
     example: 'Alex Alexov',
     description: 'full name user | null',

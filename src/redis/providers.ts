@@ -1,11 +1,13 @@
 import { createClient } from 'redis';
+import { ConfigService } from '@nestjs/config';
 
 const redisProviders = [
   {
+    inject: [ConfigService],
     provide: 'REDIS_OPTIONS',
-    useValue: {
-      url: 'redis://localhost:6379',
-    },
+    useFactory: (configService: ConfigService) => ({
+      url: `redis://${configService.get('REDIS_URL')}`,
+    }),
   },
   {
     inject: ['REDIS_OPTIONS'],

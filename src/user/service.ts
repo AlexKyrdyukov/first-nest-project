@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import * as CryptoJS from 'crypto-js';
+import * as crypto from 'crypto';
 import { Repository } from 'typeorm';
 
 import UserEntity from '../db/entities/User';
@@ -70,23 +70,26 @@ class UserService {
     });
   }
 
-  async delete(param: DeleteUserDto, user: UserEntity) {
-    await this.userRepository.remove(user);
+  async delete(user: UserEntity) {
+    return this.userRepository.remove(user);
   }
 
   hashPassword(password: string) {
-    return CryptoJS[config.hash.algorithm](
-      password,
-      config.hash.salt,
-    ).toString();
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto
+      .pbkdf2Sync(password, salt, 1000, 64, config.hash.algorithm)
+      .toString('hex');
+    return {
+      salt,
+      hash,
+    };
   }
 
-  checkPassword(newPassword: string, oldPassword: string) {
+  checkPassword(newPassword: string, oldPassword: string, salt: string) {
     const verification =
-      CryptoJS[config.hash.algorithm](
-        newPassword,
-        config.hash.salt,
-      ).toString() === oldPassword;
+      crypto
+        .pbkdf2Sync(newPassword, salt, 1000, 64, config.hash.algorithm)
+        .toString('hex') === oldPassword;
     if (!verification) {
       throw new BadRequestException('Error', {
         cause: new Error(),
@@ -97,8 +100,8 @@ class UserService {
 
   async updateUserPass(body: UpdateUserPasswordDto, user: UserEntity) {
     const { password, newPassword } = body;
-    this.checkPassword(password, user.password);
-    return this.update({ password: newPassword }, user);
+    this.checkPassword(password, user.password, user.salt);
+    this.update({ password: newPassword }, user);
   }
 
   async update(body: Partial<UserEntity>, user: UserEntity) {
@@ -107,7 +110,9 @@ class UserService {
     Object.entries(body).forEach(([key, value]) => {
       let newValue = value;
       if (key === 'password') {
-        newValue = this.hashPassword(value as string);
+        const { salt, hash } = this.hashPassword(value as string);
+        newValue = hash;
+        updateUser.salt = salt;
       }
       updateUser = {
         ...updateUser,
@@ -115,7 +120,7 @@ class UserService {
       };
     });
 
-    const { password, ...savedUser } = await this.userRepository.save(
+    const { password, salt, ...savedUser } = await this.userRepository.save(
       updateUser,
     );
     return savedUser;
@@ -128,7 +133,10 @@ class UserService {
       let currentValue = value;
 
       if (key === 'password' && this.typeConfirmation(value)) {
-        currentValue = this.hashPassword(value);
+        // currentValue = this.hashPassword(value);
+        const { salt, hash } = this.hashPassword(value);
+        currentValue = hash;
+        user.salt = salt;
       }
       user = {
         ...user,
@@ -136,7 +144,9 @@ class UserService {
       };
     });
 
-    const { password, ...savedUser } = await this.userRepository.save(user);
+    const { password, salt, ...savedUser } = await this.userRepository.save(
+      user,
+    );
     return savedUser;
   }
 }

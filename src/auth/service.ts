@@ -41,7 +41,7 @@ class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
-    this.userService.checkPassword(body.password, user.password);
+    this.userService.checkPassword(body.password, user.password, user.salt);
 
     const { refreshToken, accessToken } = await this.tokenService.createTokens(
       String(user.userId),

@@ -51,7 +51,7 @@ class UserController {
     @Param(new JoiValidationPipe(deleteUserSchema)) param: DeleteUserDto,
     @User() userDto: UserEntity,
   ) {
-    return this.userService.delete(param, userDto);
+    return this.userService.delete(userDto);
   }
 
   @ApiOperation({ summary: 'update user password ' })
