@@ -1,24 +1,25 @@
 import {
   Injectable,
-  Inject,
   HttpException,
   BadRequestException,
   HttpStatus,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import * as CryptoJS from 'crypto-js';
 import { Repository } from 'typeorm';
 
 import UserEntity from '../db/entities/User';
 import config from '../config';
-import DeleteUserDto from './dto/delete-user-dto';
-import UpdateUserPasswordDto from './dto/update-user-password.dto';
+import DeleteUserDto from './dto/deleteUser.dto';
+import UpdateUserPasswordDto from './dto/updateUserPassword.dto';
 
 type EnteredData = Record<string, string>;
 
 @Injectable()
 class UserService {
   constructor(
-    @Inject('USER_REPOSITORY')
+    @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
 

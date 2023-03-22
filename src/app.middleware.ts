@@ -10,6 +10,7 @@ export const appMiddleware = (
     const { headers } = req;
 
     const deviceId = headers.device_id;
+    console.log(deviceId);
     if (!deviceId && !deviceId?.length) {
       throw new HttpException(
         'Unknown type request please enter in application and repeat request',

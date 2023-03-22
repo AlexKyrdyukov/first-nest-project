@@ -2,16 +2,18 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
 } from '@nestjs/common';
+
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { Repository } from 'typeorm';
 
 import UserService from '../user/service';
 import TokenService from '../token/service';
 
 import UserEntity from '../db/entities/User';
-import SignInUserDto from './dto/sign-in.dto';
+import SignInUserDto from './dto/signIn.dto';
 import RefreshTokenDto, { DeviceIdDto } from './dto/refresh.dto';
 
 @Injectable()
@@ -19,11 +21,11 @@ class AuthService {
   constructor(
     private userService: UserService,
     private tokenService: TokenService,
-    @Inject('USER_REPOSITORY') private userRepository: Repository<UserEntity>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
   ) {}
 
   async signIn(body: SignInUserDto, headers: DeviceIdDto) {
-    console.log('event');
     const deviceId = headers.device_id;
     const { email } = body;
 
@@ -34,10 +36,10 @@ class AuthService {
       .getOne();
 
     if (!user) {
-      throw new BadRequestException('Error', {
-        cause: new Error(),
-        description: 'User with this email not found',
-      });
+      throw new HttpException(
+        'user with this email not found please checked entered data',
+        HttpStatus.NOT_FOUND,
+      );
     }
     this.userService.checkPassword(body.password, user.password);
 
@@ -59,10 +61,10 @@ class AuthService {
     const { email } = body;
     const existedUser = await this.userService.findByEmail({ email });
     if (existedUser) {
-      throw new BadRequestException('Error', {
-        cause: new Error(),
-        description: 'User with this email already exist',
-      });
+      throw new HttpException(
+        'user with this email already exist',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const user = await this.userService.createNewUser(body);
     const { refreshToken, accessToken } = await this.tokenService.createTokens(
@@ -80,11 +82,11 @@ class AuthService {
   async refresh(dto: RefreshTokenDto, deviceId: DeviceIdDto['device_id']) {
     const [auth, token] = dto.refreshToken?.split(' ');
 
-    if (!deviceId || auth !== 'Bearer') {
+    if (!deviceId || !deviceId.length || auth !== 'Bearer') {
       throw new HttpException(
-        'user please authorization',
+        'Unknown type authorization, please enter in application & repeat request',
         HttpStatus.UNAUTHORIZED,
-      ); //unknown authorization type
+      );
     }
     const { userId } = await this.tokenService.verifyRefresh(deviceId, token);
 

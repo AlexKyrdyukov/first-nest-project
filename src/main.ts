@@ -21,6 +21,10 @@ import config from './config';
       .setDescription('Documentation REST API')
       .setVersion('0.0.1')
       .addTag('produced by Alexey Kurilov')
+      .addBearerAuth(
+        { in: 'header', type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'access-token',
+      )
       .build();
     const options: SwaggerDocumentOptions = {
       operationIdFactory: (controllerKey: string, methodKey: string) =>

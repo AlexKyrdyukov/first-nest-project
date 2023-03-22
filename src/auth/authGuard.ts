@@ -1,19 +1,23 @@
 import {
   CanActivate,
   ExecutionContext,
-  Inject,
+  HttpException,
+  HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { Repository } from 'typeorm';
 
-import User from '../db/entities/User';
+import UserEntity from '../db/entities/User';
 import TokenService from '../token/service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private tokenService: TokenService,
-    @Inject('USER_REPOSITORY') private userRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -21,12 +25,19 @@ export class AuthGuard implements CanActivate {
     const { headers, params } = request;
     const id = params.userId;
     const { authorization } = headers;
+
     if (!authorization) {
-      return false;
+      throw new HttpException(
+        'please authorization in application',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     const [auth, token] = authorization.split(' ');
     if (auth !== 'Bearer') {
-      return false;
+      throw new HttpException(
+        'Unknown type authorization, please enter in application & repeat request',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     const { userId } = await this.tokenService.verifyToken(token);
 

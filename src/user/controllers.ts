@@ -19,20 +19,21 @@ import {
 
 import UpdateUserPasswordDto, {
   updateUserPasswordSchema,
-} from './dto/update-user-password.dto';
+} from './dto/updateUserPassword.dto';
+
 import UserService from './service';
 import { User } from './user.decorator';
 import UserEntity from '../db/entities/User';
-import { AuthGuard } from '../auth/auth-guard';
-import UserParamDto from './dto/user-param-dto';
+import { AuthGuard } from '../auth/authGuard';
+import UserParamDto from './dto/userParam.dto';
 import { JoiValidationPipe } from './../pipes/validation-pipe';
-import DeleteUserDto, { deleteUserSchema } from './dto/delete-user-dto';
-import UpdateUserDto, { updateUserSchema } from './dto/update-user-data.dto';
-import SetAvatarUserDto, { setAvatarUserSchema } from './dto/set-avatar-dto';
+import DeleteUserDto, { deleteUserSchema } from './dto/deleteUser.dto';
+import UpdateUserDto, { updateUserSchema } from './dto/updateUserData.dto';
+import SetAvatarUserDto, { setAvatarUserSchema } from './dto/setAvatar.dto';
 
 @ApiTags('user api')
 @Controller('user')
-@ApiHeader({ name: 'deviceId: string' })
+@ApiHeader({ name: 'deviceId' })
 @UseGuards(AuthGuard)
 class UserController {
   constructor(private readonly userService: UserService) {}

@@ -1,22 +1,15 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import UserService from './service';
-import userProviders from './providers';
-import DatabaseModule from '../db/module';
+import RedisModule from '../redis/module';
 import UserController from './controllers';
 import TokenService from '../token/service';
-import RedisService from '../redis/service';
-import { AuthGuard } from '../auth/auth-guard';
-
+import UserEntity from '../db/entities/User';
+import { AuthGuard } from '../auth/authGuard';
 @Module({
-  imports: [DatabaseModule],
-  providers: [
-    ...userProviders,
-    UserService,
-    AuthGuard,
-    TokenService,
-    RedisService,
-  ],
+  imports: [TypeOrmModule.forFeature([UserEntity]), RedisModule],
+  providers: [UserService, AuthGuard, TokenService],
   controllers: [UserController],
   exports: [UserService],
 })

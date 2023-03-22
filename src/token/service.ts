@@ -7,6 +7,7 @@ type PayloadType = Record<string, never>;
 @Injectable()
 class TokenService {
   constructor(private redisRepository: RedisService<string>) {}
+
   async asyncSign<P extends object>(
     payload: P,
     secret: string,
@@ -38,9 +39,9 @@ class TokenService {
           }
           return reject(
             new HttpException(
-              'User unknown type authorized',
+              'User unknown type authorized please sign in application',
               HttpStatus.UNAUTHORIZED,
-            ), //user unaunthorized (unknown type authorization)
+            ), //user unaunthorized (unknown type salt | hash)
           );
         }
         return resolve(data as P);
@@ -85,7 +86,10 @@ class TokenService {
       deviceId,
     );
     if (token !== existenToken || !existenToken) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN); //user dont login please login
+      throw new HttpException(
+        'Please sign in application and repeat request',
+        HttpStatus.FORBIDDEN,
+      ); //user dont login please login
     }
     const payload = await this.verifyToken(token);
     return payload;

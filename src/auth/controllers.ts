@@ -23,17 +23,17 @@ import {
 } from '@nestjs/swagger';
 
 import AuthService from './service';
-import { AuthGuard } from './auth-guard';
+import { AuthGuard } from './authGuard';
 import UserEntity from '../db/entities/User';
-import SignInUserDto from './dto/sign-in.dto';
+import SignInUserDto from './dto/signIn.dto';
 import { User } from 'src/user/user.decorator';
 import { refreshSchema } from './dto/refresh.dto';
 import { JoiValidationPipe } from '../pipes/validation-pipe';
-import { signInSchema, ReturnSignInDto } from './dto/sign-in.dto';
+import { signInSchema, ReturnSignInDto } from './dto/signIn.dto';
 
 @ApiTags('auth api')
 @Controller('auth')
-@ApiHeader({ name: 'deviceId: string' })
+@ApiHeader({ name: 'deviceId' })
 class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -58,7 +58,6 @@ class AuthController {
     @Body(new JoiValidationPipe(signInSchema)) dto: SignInUserDto,
     @Headers() headers: DeviceIdDto,
   ) {
-    console.log(dto);
     return await this.authService.signUp(dto, headers);
   }
 
