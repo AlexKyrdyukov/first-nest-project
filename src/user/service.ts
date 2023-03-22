@@ -24,7 +24,7 @@ class UserService {
   ) {}
 
   // todo: rename
-  checkIsString(value: string | number | Date): value is string {
+  typeConfirmation(value: string | number | Date): value is string {
     return (value as string)?.length !== undefined;
   }
 
@@ -127,7 +127,7 @@ class UserService {
     Object.entries(params).forEach(([key, value]) => {
       let currentValue = value;
 
-      if (key === 'password' && this.checkIsString(value)) {
+      if (key === 'password' && this.typeConfirmation(value)) {
         currentValue = this.hashPassword(value);
       }
       user = {
