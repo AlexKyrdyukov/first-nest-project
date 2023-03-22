@@ -5,7 +5,9 @@ import {
   Param,
   Patch,
   Post,
+  Get,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 
 import {
@@ -97,7 +99,7 @@ class UserController {
   })
   @ApiResponse({ status: 200, type: UserEntity })
   @Post(':userId/avatar')
-  async stUserAvatar(
+  async setUserAvatar(
     @Body(new JoiValidationPipe(setAvatarUserSchema)) body: SetAvatarUserDto,
     @User() userDto: UserEntity,
   ) {

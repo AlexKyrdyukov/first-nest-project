@@ -47,7 +47,7 @@ class AuthController {
     @Body(new JoiValidationPipe(signInSchema)) dto: SignInUserDto,
     @Headers() headers: DeviceIdDto,
   ) {
-    return await this.authService.signIn(dto, headers);
+    return  this.authService.signIn(dto, headers);
   }
 
   @ApiOperation({ summary: 'created user with tokens' })
@@ -58,7 +58,7 @@ class AuthController {
     @Body(new JoiValidationPipe(signInSchema)) dto: SignInUserDto,
     @Headers() headers: DeviceIdDto,
   ) {
-    return await this.authService.signUp(dto, headers);
+    return  this.authService.signUp(dto, headers);
   }
 
   @ApiParam({ name: 'userId' })
@@ -80,7 +80,7 @@ class AuthController {
     @Body() dto: RefreshTokenDto,
     @Headers('device_id') deviceId: DeviceIdDto['device_id'],
   ): Promise<RefreshRouteResponse> {
-    return await this.authService.refresh(dto, deviceId);
+    return  this.authService.refresh(dto, deviceId);
   }
 }
 

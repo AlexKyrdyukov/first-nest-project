@@ -23,6 +23,7 @@ class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
+  // todo: rename
   checkIsString(value: string | number | Date): value is string {
     return (value as string)?.length !== undefined;
   }
@@ -41,19 +42,19 @@ class UserService {
           description: 'User with this email already exist',
         });
       }
-      return await this.createNewUser(body);
+      return this.createNewUser(body);
     } catch (error) {
       throw error;
     }
   }
 
   async findAll(): Promise<UserEntity[]> {
-    return await this.userRepository.find();
+    return this.userRepository.find();
   }
 
   async findById(params: EnteredData): Promise<UserEntity | null> {
     const { userId } = params;
-    return await this.userRepository.findOne({
+    return this.userRepository.findOne({
       where: {
         userId: Number(userId),
       },
@@ -62,7 +63,7 @@ class UserService {
 
   async findByEmail(params: EnteredData): Promise<UserEntity | null> {
     const { email } = params;
-    return await this.userRepository.findOne({
+    return this.userRepository.findOne({
       where: {
         email,
       },
@@ -70,10 +71,6 @@ class UserService {
   }
 
   async delete(param: DeleteUserDto, user: UserEntity) {
-    const { userId } = param;
-    if (userId !== user.userId) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
     await this.userRepository.remove(user);
   }
 
@@ -101,7 +98,7 @@ class UserService {
   async updateUserPass(body: UpdateUserPasswordDto, user: UserEntity) {
     const { password, newPassword } = body;
     this.checkPassword(password, user.password);
-    this.update({ password: newPassword }, user);
+    return this.update({ password: newPassword }, user);
   }
 
   async update(body: Partial<UserEntity>, user: UserEntity) {

@@ -2,6 +2,9 @@ import * as jwt from 'jsonwebtoken';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import RedisService from '../redis/service';
 import config from '../config';
+// import { promisify } from 'util';
+
+// const jwtSignPromised = promisify(jwt.sign);
 
 type PayloadType = Record<string, never>;
 @Injectable()
@@ -13,6 +16,7 @@ class TokenService {
     secret: string,
     options: jwt.SignOptions,
   ) {
+    // return jwtSignPromised(payload, secret, options);
     return new Promise<string>((resolve, reject) => {
       jwt.sign(payload, secret, options, (error, data) => {
         if (error) {
@@ -32,24 +36,24 @@ class TokenService {
       jwt.verify(token, secret, options, (error, data) => {
         if (error) {
           if (error.message === 'jwt expired') {
-            throw new HttpException(
-              'User unauthorized',
-              HttpStatus.UNAUTHORIZED,
+            reject(
+              new HttpException('User unauthorized', HttpStatus.UNAUTHORIZED),
             ); //user unaunthorized(toke expired)
           }
-          return reject(
+          reject(
             new HttpException(
               'User unknown type authorized please sign in application',
               HttpStatus.UNAUTHORIZED,
             ), //user unaunthorized (unknown type salt | hash)
           );
         }
-        return resolve(data as P);
+        resolve(data as P);
       });
     });
   }
 
   async createTokens(userId: string, deviceId: string) {
+    // todo: Promise.all
     const accessToken = await this.asyncSign({ userId }, config.token.secret, {
       expiresIn: config.token.expiresIn.access,
     });
@@ -71,13 +75,10 @@ class TokenService {
     };
   }
 
-  async verifyToken(token: string) {
-    const payload: PayloadType = await this.asyncVerify(
-      token,
-      config.token.secret,
-      { complete: false },
-    );
-    return payload;
+  async verifyToken(token: string): Promise<PayloadType> {
+    return this.asyncVerify(token, config.token.secret, {
+      complete: false,
+    });
   }
 
   async verifyRefresh(deviceId: string, token: string) {
@@ -85,6 +86,7 @@ class TokenService {
       'refreshToken',
       deviceId,
     );
+    console.log(deviceId, 'token front:', token, 'tokenredis:', existenToken);
     if (token !== existenToken || !existenToken) {
       throw new HttpException(
         'Please sign in application and repeat request',

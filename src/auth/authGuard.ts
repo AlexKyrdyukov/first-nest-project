@@ -42,7 +42,7 @@ export class AuthGuard implements CanActivate {
     const { userId } = await this.tokenService.verifyToken(token);
 
     if (id && id !== userId) {
-      return false;
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
 
     const user = await this.userRepository

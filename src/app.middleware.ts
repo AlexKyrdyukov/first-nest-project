@@ -6,20 +6,15 @@ export const appMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  try {
-    const { headers } = req;
+  const { headers } = req;
 
-    const deviceId = headers.device_id;
-    console.log(deviceId);
-    if (!deviceId && !deviceId?.length) {
-      throw new HttpException(
-        'Unknown type request please enter in application and repeat request',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    next();
-  } catch (error) {
-    next(error);
+  const deviceId = headers.device_id;
+  if (!deviceId && !deviceId?.length) {
+    throw new HttpException(
+      'Unknown type request please enter in application and repeat request',
+      HttpStatus.UNAUTHORIZED,
+    );
   }
+
+  next();
 };
