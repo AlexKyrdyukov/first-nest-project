@@ -10,7 +10,7 @@ class Address {
 
   @ApiProperty({
     example: 'Obema chmo street',
-    description: 'strett of location',
+    description: 'stret of location',
   })
   @typeorm.Column()
   street: string;

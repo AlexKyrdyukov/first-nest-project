@@ -69,7 +69,15 @@ class User {
   @typeorm.OneToMany(() => PostEntity, (post: PostEntity) => post.author)
   posts: PostEntity[];
 
-  @typeorm.OneToOne(() => AddresEntity, (address: AddresEntity) => address.user)
+  @typeorm.OneToOne(
+    () => AddresEntity,
+    (address: AddresEntity) => address.user,
+    {
+      eager: true,
+      cascade: true,
+    },
+  )
+  @typeorm.JoinColumn()
   address: AddresEntity;
 }
 

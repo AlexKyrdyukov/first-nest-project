@@ -1,5 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { promisify } from 'util';
 
 import * as crypto from 'crypto';
 import { Repository } from 'typeorm';
@@ -20,6 +21,9 @@ type Data =
   | CommentEntity[]
   | PostEntity[]
   | AddressEntity;
+
+const pbkdf2Async = promisify(crypto.pbkdf2);
+const randBytes = promisify(crypto.randomBytes);
 
 @Injectable()
 class UserService {
@@ -88,6 +92,13 @@ class UserService {
       salt,
       hash,
     };
+  }
+
+  async hashAsyncPassword(password: string) {
+    const bytes = await randBytes(48).catch((err) => {
+      console.log(err);
+    });
+    return bytes.toString('hex');
   }
 
   checkPassword(newPassword: string, oldPassword: string, salt: string) {

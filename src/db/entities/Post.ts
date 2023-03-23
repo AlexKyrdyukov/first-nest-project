@@ -32,11 +32,25 @@ class Post {
   deletedDate: Date;
 
   @ApiProperty({
-    example: 'this is cool post',
+    example: 'content post about cars',
     description: 'text post',
   })
   @typeorm.Column({ unique: false, nullable: false, type: 'varchar' })
   content: string;
+
+  @ApiProperty({
+    example: 'this post about cars',
+    description: 'title post',
+  })
+  @typeorm.Column()
+  title: string;
+
+  @ApiProperty({
+    example: 'cars',
+    description: 'post category',
+  })
+  @typeorm.Column({ nullable: true })
+  category?: string;
 
   @typeorm.ManyToOne(() => UserEntity, (author: UserEntity) => author.posts)
   author: UserEntity;

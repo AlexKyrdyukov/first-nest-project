@@ -23,7 +23,7 @@ class AuthService {
     private tokenService: TokenService,
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
-  ) {}
+  ) { }
 
   async signIn(body: SignInUserDto, headers: DeviceIdDto) {
     const deviceId = headers.device_id;
@@ -57,27 +57,59 @@ class AuthService {
     };
   }
 
-  async signUp(body: SignInUserDto, headers: DeviceIdDto) {
-    const deviceId = headers.device_id;
-    const { email } = body;
-    const existedUser = await this.userService.findByEmail({ email });
-    if (existedUser) {
+  // async signUp(body: SignInUserDto, headers: DeviceIdDto) {
+  //   const deviceId = headers.device_id;
+  //   const { email } = body;
+  //   const existedUser = await this.userService.findByEmail({ email });
+  //   if (existedUser) {
+  //     throw new HttpException(
+  //       'user with this email already exist',
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+  //   const user = await this.userService.createNewUser(body);
+  //   const { refreshToken, accessToken } = await this.tokenService.createTokens(
+  //     String(user.userId),
+  //     deviceId,
+  //   );
+
+  //   return {
+  //     accessToken,
+  //     refreshToken,
+  //     user,
+  //   };
+  // }
+
+  async register(registrationData: SignInUserDto, headers: DeviceIdDto) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: registrationData.email,
+      },
+    });
+    if (user) {
       throw new HttpException(
-        'user with this email already exist',
-        HttpStatus.BAD_REQUEST,
+        'User with this email does not exist',
+        HttpStatus.NOT_FOUND,
       );
     }
-    const user = await this.userService.createNewUser(body);
-    const { refreshToken, accessToken } = await this.tokenService.createTokens(
-      String(user.userId),
-      deviceId,
-    );
 
-    return {
-      accessToken,
-      refreshToken,
-      user,
-    };
+    const data = this.userService.hashPassword(registrationData.password);
+    try {
+      const createdUser = this.userRepository.create({
+        ...registrationData,
+        password: data.hash,
+        salt: data.salt,
+      });
+      // createdUser.password = undefined;
+      return createdUser;
+      const { salt, password, ...user } = createdUser;
+      return user;
+    } catch (error) {
+      throw new HttpException(
+        'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async refresh(dto: RefreshTokenDto, deviceId: DeviceIdDto['device_id']) {
