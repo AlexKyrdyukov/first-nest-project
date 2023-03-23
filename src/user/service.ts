@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  HttpException,
-  BadRequestException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import * as crypto from 'crypto';
@@ -11,10 +6,20 @@ import { Repository } from 'typeorm';
 
 import UserEntity from '../db/entities/User';
 import config from '../config';
-import DeleteUserDto from './dto/deleteUser.dto';
 import UpdateUserPasswordDto from './dto/updateUserPassword.dto';
+import CommentEntity from '../db/entities/Comment';
+import PostEntity from '../db/entities/Post';
+import AddressEntity from '../db/entities/Address';
 
 type EnteredData = Record<string, string>;
+
+type Data =
+  | string
+  | number
+  | Date
+  | CommentEntity[]
+  | PostEntity[]
+  | AddressEntity;
 
 @Injectable()
 class UserService {
@@ -24,7 +29,7 @@ class UserService {
   ) {}
 
   // todo: rename
-  typeConfirmation(value: string | number | Date): value is string {
+  confirmationStringType(value: Data | null): value is string {
     return (value as string)?.length !== undefined;
   }
 
@@ -37,10 +42,10 @@ class UserService {
         },
       });
       if (user) {
-        throw new BadRequestException('Error', {
-          cause: new Error(),
-          description: 'User with this email already exist',
-        });
+        throw new HttpException(
+          'user with this email already exist',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       return this.createNewUser(body);
     } catch (error) {
@@ -91,10 +96,10 @@ class UserService {
         .pbkdf2Sync(newPassword, salt, 1000, 64, config.hash.algorithm)
         .toString('hex') === oldPassword;
     if (!verification) {
-      throw new BadRequestException('Error', {
-        cause: new Error(),
-        description: 'Entered password invalid',
-      });
+      throw new HttpException(
+        'Entered password invalid',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -109,8 +114,8 @@ class UserService {
 
     Object.entries(body).forEach(([key, value]) => {
       let newValue = value;
-      if (key === 'password') {
-        const { salt, hash } = this.hashPassword(value as string);
+      if (key === 'password' && this.confirmationStringType(value)) {
+        const { salt, hash } = this.hashPassword(value);
         newValue = hash;
         updateUser.salt = salt;
       }
@@ -132,8 +137,7 @@ class UserService {
     Object.entries(params).forEach(([key, value]) => {
       let currentValue = value;
 
-      if (key === 'password' && this.typeConfirmation(value)) {
-        // currentValue = this.hashPassword(value);
+      if (key === 'password' && this.confirmationStringType(value)) {
         const { salt, hash } = this.hashPassword(value);
         currentValue = hash;
         user.salt = salt;

@@ -32,6 +32,7 @@ class AuthService {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .addSelect('user.password')
+      .addSelect('user.salt')
       .where('user.email = :email', { email })
       .getOne();
 
@@ -47,7 +48,7 @@ class AuthService {
       String(user.userId),
       deviceId,
     );
-    const { password, ...userFromDB } = user;
+    const { password, salt, ...userFromDB } = user;
 
     return {
       accessToken,

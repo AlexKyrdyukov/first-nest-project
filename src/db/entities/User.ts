@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import * as typeorm from 'typeorm';
+import CommentEntity from './Comment';
+import PostEntity from './Post';
+import AddresEntity from './Address';
 
 @typeorm.Entity()
 class User {
-  @ApiProperty({ example: '1', description: 'unique identificator' })
+  @ApiProperty({ example: 1, description: 'unique identificator' })
   @typeorm.PrimaryGeneratedColumn()
   userId: number;
 
@@ -56,6 +59,18 @@ class User {
   })
   @typeorm.Column({ unique: false, nullable: true, type: 'varchar' })
   avatar?: string;
+
+  @typeorm.OneToMany(
+    () => CommentEntity,
+    (comment: CommentEntity) => comment.author,
+  )
+  comment: CommentEntity[];
+
+  @typeorm.OneToMany(() => PostEntity, (post: PostEntity) => post.author)
+  posts: PostEntity[];
+
+  @typeorm.OneToOne(() => AddresEntity, (address: AddresEntity) => address.user)
+  address: AddresEntity;
 }
 
 export default User;

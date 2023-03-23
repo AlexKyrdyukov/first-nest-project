@@ -2,11 +2,11 @@ import * as jwt from 'jsonwebtoken';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import RedisService from '../redis/service';
 import config from '../config';
-// import { promisify } from 'util';
 
-// const jwtSignPromised = promisify(jwt.sign);
+type Payload = Record<string, never>;
 
-type PayloadType = Record<string, never>;
+type ExpiresIn = keyof typeof config.token.expiresIn;
+
 @Injectable()
 class TokenService {
   constructor(private redisRepository: RedisService<string>) {}
@@ -16,11 +16,10 @@ class TokenService {
     secret: string,
     options: jwt.SignOptions,
   ) {
-    // return jwtSignPromised(payload, secret, options);
     return new Promise<string>((resolve, reject) => {
       jwt.sign(payload, secret, options, (error, data) => {
         if (error) {
-          return reject(error);
+          reject(error); // delete return check work
         }
         resolve(data as string);
       });
@@ -54,13 +53,15 @@ class TokenService {
 
   async createTokens(userId: string, deviceId: string) {
     // todo: Promise.all
-    const accessToken = await this.asyncSign({ userId }, config.token.secret, {
-      expiresIn: config.token.expiresIn.access,
-    });
+    const arrayTypesTokens: ExpiresIn[] = ['access', 'refresh'];
 
-    const refreshToken = await this.asyncSign({ userId }, config.token.secret, {
-      expiresIn: config.token.expiresIn.refresh,
-    });
+    const [accessToken, refreshToken] = await Promise.all(
+      arrayTypesTokens.map((item) =>
+        this.asyncSign({ userId }, config.token.secret, {
+          expiresIn: config.token.expiresIn[item],
+        }),
+      ),
+    );
 
     await this.redisRepository.set(
       'refreshToken',
@@ -75,7 +76,7 @@ class TokenService {
     };
   }
 
-  async verifyToken(token: string): Promise<PayloadType> {
+  async verifyToken(token: string): Promise<Payload> {
     return this.asyncVerify(token, config.token.secret, {
       complete: false,
     });
@@ -86,7 +87,6 @@ class TokenService {
       'refreshToken',
       deviceId,
     );
-    console.log(deviceId, 'token front:', token, 'tokenredis:', existenToken);
     if (token !== existenToken || !existenToken) {
       throw new HttpException(
         'Please sign in application and repeat request',

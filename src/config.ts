@@ -45,8 +45,8 @@ const config = {
       | 'PS512'
       | 'none',
     expiresIn: {
-      refresh: mainConfig.REFRESH_TOKEN_AUTH_EXPIRATION,
       access: mainConfig.ACCESS_TOKEN_AUTH_EXPIRATION,
+      refresh: mainConfig.REFRESH_TOKEN_AUTH_EXPIRATION,
     },
   },
   urls: {

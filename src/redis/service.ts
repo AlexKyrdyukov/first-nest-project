@@ -3,28 +3,28 @@ const ms = require('ms');
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { RedisClientType } from '@redis/client';
+import UserService from '../user/service';
 
 @Injectable()
 class RedisService<T_DataType> {
   constructor(
     @Inject('REDIS_CLIENT')
     private readonly redisClient: RedisClientType,
+    private readonly userService: UserService,
   ) {}
 
-  createKey = (rootKey: string, nestedKey: string) => {
+  createKey(rootKey: string, nestedKey: string) {
     return `${rootKey}:${nestedKey}`;
-  };
+  }
 
   get = async (rootKey: string, nestedKey: string): Promise<T_DataType> => {
     const key = this.createKey(rootKey, nestedKey);
 
     const data = await this.redisClient.get(key);
 
-    const isString = (data: string | null): data is string => {
-      return (data as string)?.length !== undefined;
-    };
-
-    const parsedData = isString(data) ? JSON.parse(data) : null;
+    const parsedData = this.userService.confirmationStringType(data)
+      ? JSON.parse(data)
+      : null;
 
     return parsedData;
   };
@@ -37,8 +37,7 @@ class RedisService<T_DataType> {
     const key = this.createKey(rootKey, nestedKey);
     const strinfigyedValue = JSON.stringify(value);
 
-    const expiresInInString = expiresIn; // || this.defaultExpiresIn;
-    const expiresInMs = expiresInInString ? ms(expiresInInString) : undefined;
+    const expiresInMs = expiresIn ? ms(expiresIn) : undefined;
     await this.redisClient.set(key, strinfigyedValue, {
       EX: expiresInMs,
     });
