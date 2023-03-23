@@ -94,11 +94,22 @@ class UserService {
     };
   }
 
-  async hashAsyncPassword(password: string) {
-    const bytes = await randBytes(48).catch((err) => {
-      console.log(err);
-    });
-    return bytes.toString('hex');
+  async createSalt() {
+    return randBytes(48)
+      .then((value) => value.toString('hex'))
+      .catch((error) => console.error(error));
+  }
+
+  async hashPass(password: string) {
+    const salt = await this.createSalt();
+    console.log(salt);
+    return pbkdf2Async(
+      password,
+      String(salt),
+      1000,
+      64,
+      config.hash.algorithm,
+    ).then((value) => value.toString('hex'));
   }
 
   checkPassword(newPassword: string, oldPassword: string, salt: string) {

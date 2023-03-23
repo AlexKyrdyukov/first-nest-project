@@ -57,28 +57,32 @@ class AuthService {
     };
   }
 
-  // async signUp(body: SignInUserDto, headers: DeviceIdDto) {
-  //   const deviceId = headers.device_id;
-  //   const { email } = body;
-  //   const existedUser = await this.userService.findByEmail({ email });
-  //   if (existedUser) {
-  //     throw new HttpException(
-  //       'user with this email already exist',
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  //   const user = await this.userService.createNewUser(body);
-  //   const { refreshToken, accessToken } = await this.tokenService.createTokens(
-  //     String(user.userId),
-  //     deviceId,
-  //   );
+  async signUp(body: SignInUserDto, headers: DeviceIdDto) {
+    const hash = await this.userService.hashPass('dsdsd');
+    const hash1 = await this.userService.hashPass('dsdsd');
 
-  //   return {
-  //     accessToken,
-  //     refreshToken,
-  //     user,
-  //   };
-  // }
+    console.log(62, hash, hash1);
+    const deviceId = headers.device_id;
+    const { email } = body;
+    const existedUser = await this.userService.findByEmail({ email });
+    if (existedUser) {
+      throw new HttpException(
+        'user with this email already exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const user = await this.userService.createNewUser(body);
+    const { refreshToken, accessToken } = await this.tokenService.createTokens(
+      String(user.userId),
+      deviceId,
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+      user,
+    };
+  }
 
   async register(registrationData: SignInUserDto, headers: DeviceIdDto) {
     const user = await this.userRepository.findOne({
