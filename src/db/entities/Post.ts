@@ -3,6 +3,7 @@ import * as typeorm from 'typeorm';
 
 import UserEntity from './User';
 import CommentEntity from './Comment';
+import CategoryEntity from './Categories';
 
 @typeorm.Entity()
 class Post {
@@ -52,14 +53,33 @@ class Post {
   @typeorm.Column({ nullable: true })
   category?: string;
 
+  @ApiProperty({
+    description: 'author post',
+    type: () => UserEntity,
+  })
   @typeorm.ManyToOne(() => UserEntity, (author: UserEntity) => author.posts)
   author: UserEntity;
 
+  @ApiProperty({
+    description: 'comments related to the post | null',
+    type: () => CommentEntity,
+  })
   @typeorm.OneToMany(
     () => CommentEntity,
     (comment: CommentEntity) => comment.post,
   )
   comments: CommentEntity[];
+
+  @ApiProperty({
+    description: 'categories related to the post | null',
+    type: () => CategoryEntity,
+  })
+  @typeorm.ManyToMany(
+    () => CategoryEntity,
+    (category: CategoryEntity) => category.posts,
+    { cascade: true, eager: true },
+  )
+  categories: CategoryEntity[];
 }
 
 export default Post;

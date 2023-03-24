@@ -3,6 +3,7 @@ import * as typeorm from 'typeorm';
 import CommentEntity from './Comment';
 import PostEntity from './Post';
 import AddresEntity from './Address';
+import RoleEntity from './Role';
 
 @typeorm.Entity()
 class User {
@@ -35,10 +36,6 @@ class User {
   @typeorm.Column({ unique: false, nullable: false, type: 'varchar', select: false })
   password: string;
 
-  // eslint-disable-next-line prettier/prettier
-  @typeorm.Column({ unique: false, nullable: false, type: 'varchar', select: false })
-  salt: string;
-
   @ApiProperty({
     example: 'Alex Alexov',
     description: 'full name user | null',
@@ -60,15 +57,27 @@ class User {
   @typeorm.Column({ unique: false, nullable: true, type: 'varchar' })
   avatar?: string;
 
+  @ApiProperty({
+    description: 'comments user | null',
+    type: () => CommentEntity,
+  })
   @typeorm.OneToMany(
     () => CommentEntity,
     (comment: CommentEntity) => comment.author,
   )
   comment: CommentEntity[];
 
+  @ApiProperty({
+    description: 'posts user | null',
+    type: () => PostEntity,
+  })
   @typeorm.OneToMany(() => PostEntity, (post: PostEntity) => post.author)
   posts: PostEntity[];
 
+  @ApiProperty({
+    description: 'address user',
+    type: AddresEntity,
+  })
   @typeorm.OneToOne(
     () => AddresEntity,
     (address: AddresEntity) => address.user,
@@ -79,6 +88,14 @@ class User {
   )
   @typeorm.JoinColumn()
   address: AddresEntity;
+
+  @ApiProperty({
+    description: 'roles relation with users',
+    type: () => RoleEntity,
+  })
+  @typeorm.ManyToMany(() => RoleEntity, (role: RoleEntity) => role.users)
+  @typeorm.JoinTable()
+  roles: RoleEntity[];
 }
 
 export default User;

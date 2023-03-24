@@ -2,55 +2,49 @@ import { ApiProperty } from '@nestjs/swagger';
 import * as typeorm from 'typeorm';
 
 import UserEntity from './User';
-import PostEntity from './Post';
+import CommentEntity from './Comment';
+import CategoryEntity from './Categories';
 
 @typeorm.Entity()
-class Comment {
+class Role {
   @ApiProperty({ example: 1, description: 'unique identificator' })
   @typeorm.PrimaryGeneratedColumn()
-  commentId: number;
+  roleId: number;
 
   @ApiProperty({
     example: '2023-03-17T19:04:21.913Z',
-    description: 'date create comment',
+    description: 'date create role',
   })
   @typeorm.CreateDateColumn()
   createdDate: Date;
 
   @ApiProperty({
     example: '2023-03-17T19:04:21.913Z',
-    description: 'date update comment',
+    description: 'date update role',
   })
   @typeorm.UpdateDateColumn({ select: false })
   updatedDate: Date;
 
   @ApiProperty({
     example: '2023-03-17T19:04:21.913Z | null',
-    description: 'date delete comment',
+    description: 'date delete role',
   })
   @typeorm.DeleteDateColumn({ select: false })
   deletedDate: Date;
 
   @ApiProperty({
-    example: 'this is cool post',
-    description: 'text comment',
+    example: 'cars',
+    description: 'post category',
   })
-  @typeorm.Column({ unique: false, nullable: false, type: 'varchar' })
-  content: string;
+  @typeorm.Column({ nullable: true })
+  name?: string;
 
   @ApiProperty({
-    description: 'comment author | null',
+    description: 'users relation with roles',
     type: () => UserEntity,
   })
-  @typeorm.ManyToOne(() => UserEntity, (author: UserEntity) => author.posts)
-  author: UserEntity;
-
-  @ApiProperty({
-    description: 'comment post | null',
-    type: () => PostEntity,
-  })
-  @typeorm.ManyToOne(() => PostEntity, (post: PostEntity) => post.comments)
-  post: PostEntity;
+  @typeorm.ManyToMany(() => UserEntity, (user: UserEntity) => user.roles)
+  users: UserEntity[];
 }
 
-export default Comment;
+export default Role;

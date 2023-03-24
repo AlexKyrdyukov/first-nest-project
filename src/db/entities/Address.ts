@@ -9,6 +9,27 @@ class Address {
   addresId: number;
 
   @ApiProperty({
+    example: '2023-03-17T19:04:21.913Z',
+    description: 'date create address',
+  })
+  @typeorm.CreateDateColumn()
+  createdDate: Date;
+
+  @ApiProperty({
+    example: '2023-03-17T19:04:21.913Z',
+    description: 'date update address',
+  })
+  @typeorm.UpdateDateColumn({ select: false })
+  updatedDate: Date;
+
+  @ApiProperty({
+    example: '2023-03-17T19:04:21.913Z | null',
+    description: 'date delete address',
+  })
+  @typeorm.DeleteDateColumn({ select: false })
+  deletedDate: Date;
+
+  @ApiProperty({
     example: 'Obema chmo street',
     description: 'stret of location',
   })
@@ -23,6 +44,10 @@ class Address {
   @typeorm.Column()
   country: string;
 
+  @ApiProperty({
+    description: 'user reltions with address',
+    type: () => UserEntity,
+  })
   @typeorm.OneToOne(() => UserEntity, (user: UserEntity) => user.address)
   user: UserEntity;
 }

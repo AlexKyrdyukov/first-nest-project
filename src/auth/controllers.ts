@@ -30,6 +30,7 @@ import { User } from 'src/user/user.decorator';
 import { refreshSchema } from './dto/refresh.dto';
 import { JoiValidationPipe } from '../pipes/validation-pipe';
 import { signInSchema, ReturnSignInDto } from './dto/signIn.dto';
+import { Roles } from '../roles/rolesDecorator';
 
 @ApiTags('auth api')
 @Controller('auth')
@@ -47,18 +48,19 @@ class AuthController {
     @Body(new JoiValidationPipe(signInSchema)) dto: SignInUserDto,
     @Headers() headers: DeviceIdDto,
   ) {
-    return this.authService.signIn(dto, headers);
+    // return this.authService.signIn(dto, headers);
   }
 
   @ApiOperation({ summary: 'created user with tokens' })
   @ApiBody({ type: SignInUserDto })
   @ApiResponse({ status: 201, type: ReturnSignInDto })
   @Post('sign-up')
+  @Roles('admin') // add role
   async signUp(
     @Body(new JoiValidationPipe(signInSchema)) dto: SignInUserDto,
     @Headers() headers: DeviceIdDto,
   ) {
-    return this.authService.signUp(dto, headers);
+    // return this.authService.signUp(dto, headers);
   }
 
   @ApiParam({ name: 'userId' })
@@ -67,7 +69,7 @@ class AuthController {
   @Get('me')
   @UseGuards(AuthGuard)
   async getMe(@User() reqUser: UserEntity) {
-    const { password, salt, ...user } = reqUser;
+    const { password, ...user } = reqUser;
     return user;
   }
 

@@ -51,7 +51,7 @@ class UserController {
     @Param(new JoiValidationPipe(deleteUserSchema)) param: DeleteUserDto,
     @User() userDto: UserEntity,
   ) {
-    return this.userService.delete(userDto);
+    // return this.userService.delete(userDto);
   }
 
   @ApiOperation({ summary: 'update user password ' })
@@ -69,7 +69,7 @@ class UserController {
     body: UpdateUserPasswordDto,
     @User() userDto: UserEntity,
   ) {
-    return this.userService.updateUserPass(body, userDto);
+    // return this.userService.updateUserPass(body, userDto);
   }
 
   @ApiOperation({ summary: 'update all user properties except password ' })
@@ -86,7 +86,7 @@ class UserController {
     @Body(new JoiValidationPipe(updateUserSchema)) body: UpdateUserDto,
     @User() userDto: UserEntity,
   ) {
-    return this.userService.update(body, userDto);
+    // return this.userService.update(body, userDto);
   }
 
   @ApiOperation({ summary: 'set user avatar' })
@@ -103,7 +103,7 @@ class UserController {
     @Body(new JoiValidationPipe(setAvatarUserSchema)) body: SetAvatarUserDto,
     @User() userDto: UserEntity,
   ) {
-    return this.userService.update(body, userDto);
+    // return this.userService.update(body, userDto);
   }
 }
 

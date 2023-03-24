@@ -7,10 +7,12 @@ import UserController from './controllers';
 import TokenService from '../token/service';
 import UserEntity from '../db/entities/User';
 import { AuthGuard } from '../auth/authGuard';
+import CryptoModule from '../crypto/crypto.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
     forwardRef(() => RedisModule),
+    CryptoModule,
   ],
   // imports: [TypeOrmModule.forFeature([UserEntity])],
   providers: [UserService, AuthGuard, TokenService],
