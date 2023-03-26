@@ -78,20 +78,13 @@ class User {
     description: 'address user',
     type: AddresEntity,
   })
-  @typeorm.OneToOne(
-    () => AddresEntity,
-    (address: AddresEntity) => address.user,
-    {
-      eager: true,
-      cascade: true,
-    },
-  )
+  @typeorm.OneToOne(() => AddresEntity, (address: AddresEntity) => address.user)
   @typeorm.JoinColumn()
   address: AddresEntity;
 
   @ApiProperty({
     description: 'roles relation with users',
-    type: () => RoleEntity,
+    type: () => [RoleEntity],
   })
   @typeorm.ManyToMany(() => RoleEntity, (role: RoleEntity) => role.users)
   @typeorm.JoinTable()

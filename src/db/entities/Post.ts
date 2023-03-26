@@ -62,7 +62,7 @@ class Post {
 
   @ApiProperty({
     description: 'comments related to the post | null',
-    type: () => CommentEntity,
+    type: () => [CommentEntity],
   })
   @typeorm.OneToMany(
     () => CommentEntity,
@@ -72,12 +72,11 @@ class Post {
 
   @ApiProperty({
     description: 'categories related to the post | null',
-    type: () => CategoryEntity,
+    type: () => [CategoryEntity],
   })
   @typeorm.ManyToMany(
     () => CategoryEntity,
     (category: CategoryEntity) => category.posts,
-    { cascade: true, eager: true },
   )
   categories: CategoryEntity[];
 }

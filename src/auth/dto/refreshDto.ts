@@ -1,19 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import * as Joi from 'joi';
 
-export const refreshSchema = Joi.object({
-  refreshToken: Joi.string().required(),
-});
-
-export class DeviceIdDto {
-  @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.',
-    description: 'user device id',
-  })
-  device_id: string;
-}
-
-class RefreshTokenDto {
+export class RefreshTokenDto {
   @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.',
     description: 'user refresh token',
@@ -34,5 +21,3 @@ export class RefreshRouteResponse {
   })
   refreshToken: string;
 }
-
-export default RefreshTokenDto;

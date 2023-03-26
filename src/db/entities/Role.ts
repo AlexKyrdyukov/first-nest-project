@@ -41,7 +41,7 @@ class Role {
 
   @ApiProperty({
     description: 'users relation with roles',
-    type: () => UserEntity,
+    type: () => [UserEntity],
   })
   @typeorm.ManyToMany(() => UserEntity, (user: UserEntity) => user.roles)
   users: UserEntity[];

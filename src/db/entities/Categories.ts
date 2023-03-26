@@ -37,7 +37,7 @@ class Category {
 
   @ApiProperty({
     description: 'categories related to the post | null',
-    type: () => PostEntity,
+    type: () => [PostEntity],
   })
   @typeorm.ManyToMany(() => PostEntity, (post: PostEntity) => post.categories)
   posts: PostEntity[];
