@@ -9,7 +9,7 @@ import UpdateUserPasswordDto from './dto/updateUserPassword.dto';
 import CommentEntity from '../db/entities/Comment';
 import PostEntity from '../db/entities/Post';
 import AddressEntity from '../db/entities/Address';
-import CryptoService from '../crypto/crypto.service';
+import CryptoService from '../crypto/service';
 
 @Injectable()
 class UserService {

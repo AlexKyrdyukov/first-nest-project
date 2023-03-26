@@ -7,6 +7,7 @@ import {
   MinLength,
   IsIn,
   Matches,
+  IsInstance,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -21,7 +22,7 @@ export class SignUpUserDto {
   @IsNotEmpty({ message: 'must be only  valid email' })
   @IsString({ message: 'must be only string' })
   @MaxLength(30)
-  @MaxLength(3)
+  @MinLength(3)
   email: string;
 
   @ApiProperty({ example: '123qwerty', description: 'user password' })
@@ -39,14 +40,14 @@ export class SignUpUserDto {
 
   @ApiProperty({ example: '["admin"]', description: 'user roles' })
   @IsNotEmpty()
-  @IsString()
-  @IsIn(validRoles)
+  @IsIn(validRoles, { each: true })
   @Matches('^[a-zA-Z\\s]+$', undefined, { each: true })
   role: string[];
 
-  @ValidateNested()
+  @ValidateNested({ each: true })
+  @IsInstance(UserAddresDto)
   @Type(() => UserAddresDto)
-  addres: UserAddresDto;
+  address: UserAddresDto;
 }
 
 export class ReturnSignUpDto {

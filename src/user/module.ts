@@ -7,7 +7,7 @@ import UserController from './controllers';
 import TokenService from '../token/service';
 import UserEntity from '../db/entities/User';
 import { AuthGuard } from '../auth/authGuard';
-import CryptoModule from '../crypto/crypto.module';
+import CryptoModule from '../crypto/module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),

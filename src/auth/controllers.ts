@@ -5,6 +5,7 @@ import {
   Headers,
   Post,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 
 import {
@@ -20,9 +21,10 @@ import { AuthGuard } from './authGuard';
 import UserEntity from '../db/entities/User';
 import { User } from 'src/user/user.decorator';
 import { Roles } from '../roles/rolesDecorator';
-import { ReturnSignInDto, SignInUserDto } from './dto/signInUserDto';
+import { ReturnSignUpDto, SignUpUserDto } from './dto/signUpUserDto';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { DeviceIdDto } from './dto/deviceIdDto';
+import { SignUpUserCommand } from './commands/implementations/signUpUserCommand';
 
 @ApiTags('auth api')
 @Controller('auth')
@@ -46,12 +48,17 @@ class AuthController {
   // }
 
   @ApiOperation({ summary: 'created user with tokens' })
-  @ApiBody({ type: SignInUserDto })
-  @ApiResponse({ status: 201, type: ReturnSignInDto })
+  @ApiBody({ type: SignUpUserDto })
+  @ApiResponse({ status: 201, type: ReturnSignUpDto })
   @Post('sign-up')
   @Roles('admin') // add role
-  async signUp(@Body() dto: SignInUserDto, @Headers() headers: DeviceIdDto) {
-    // return this.commandBus.execute();
+  async signUp(
+    @Body(new ValidationPipe()) dto: SignUpUserDto,
+    @Headers() headers: DeviceIdDto,
+  ) {
+    return this.commandBus.execute(
+      new SignUpUserCommand(dto, headers.device_id),
+    );
   }
 
   // @ApiParam({ name: 'userId' })
