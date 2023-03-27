@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { SignUpUserCommand } from '../implementations/signUpUserCommand';
 import UserEntity from '../../../db/entities/User';
 import AddressEntity from '../../../db/entities/Address';
@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import TokenService from '../../../token/service';
 import RolesEntity from '../../../db/entities/Role';
+import { User } from '../../../auth/models/userModels';
 
 @CommandHandler(SignUpUserCommand)
 export class SignUpUserHandler implements ICommandHandler<SignUpUserCommand> {
@@ -21,7 +22,8 @@ export class SignUpUserHandler implements ICommandHandler<SignUpUserCommand> {
     private rolesRepository: Repository<RolesEntity>,
     private crypto: CryptoService,
     private tokenService: TokenService,
-  ) { }
+    private readonly publisher: EventPublisher,
+  ) {}
 
   async execute(command: SignUpUserCommand): Promise<any> {
     const { signUpDto, deviceId } = command;
@@ -86,6 +88,12 @@ export class SignUpUserHandler implements ICommandHandler<SignUpUserCommand> {
       user: { password, ...returnedUser },
       ...returnedAddress
     } = newAddress;
+
+    const agreGateUser = this.publisher.mergeObjectContext(
+      new User(newUser.userId),
+    );
+    agreGateUser.signUp(signUpDto, deviceId);
+    agreGateUser.commit();
     return {
       user: returnedUser,
       address: returnedAddress,

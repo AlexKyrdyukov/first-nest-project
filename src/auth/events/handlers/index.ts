@@ -1,3 +1,4 @@
 import { SignedUpUserEvent } from '../implementations/signedUpUserEvent';
+import { SignedInUserEvent } from '../implementations/signedInUserEvent';
 
-export const EventHandlers = [SignedUpUserEvent];
+export const EventHandlers = [SignedUpUserEvent, SignedInUserEvent];

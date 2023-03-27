@@ -20,7 +20,7 @@ export class SignInUserDto {
   @ApiProperty({ example: '123qwerty', description: 'user password' })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(30, {
+  @MaxLength(11, {
     message:
       'must be no shorter than 3 characters and no longer than 11 characters',
   })
@@ -31,7 +31,7 @@ export class SignInUserDto {
   password: string;
 }
 
-export class ReturnSignInDto {
+export class SignInResponse {
   @ApiProperty({
     example: UserEntity,
     description: 'user',

@@ -50,7 +50,7 @@ export class SignUpUserDto {
   address: UserAddresDto;
 }
 
-export class ReturnSignUpDto {
+export class SignUpResponse {
   @ApiProperty({
     example: UserEntity,
     description: 'user',

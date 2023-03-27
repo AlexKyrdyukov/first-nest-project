@@ -5,6 +5,6 @@ import { SignedUpUserEvent } from '../implementations/signedUpUserEvent';
 @EventsHandler(SignedUpUserEvent)
 export class SignedUpUserHandler implements IEventHandler<SignedUpUserEvent> {
   handle(event: SignedUpUserEvent) {
-    console.log('signedUp event : ', event);
+    console.log('signedUp event .........: ', event);
   }
 }

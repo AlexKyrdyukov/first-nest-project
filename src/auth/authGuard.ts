@@ -40,7 +40,7 @@ export class AuthGuard implements CanActivate {
       );
     }
     const { userId } = await this.tokenService.verifyToken(token);
-
+    console.log(userId);
     if (id && id !== userId) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
@@ -48,8 +48,9 @@ export class AuthGuard implements CanActivate {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.userId = :userId', { userId })
+      .leftJoinAndSelect('user.address', 'address')
+      .leftJoinAndSelect('user.roles', 'roles')
       .addSelect('user.password')
-      .addSelect('user.salt')
       .getOne();
 
     request.user = user;

@@ -3,15 +3,17 @@ const ms = require('ms');
 
 import { Inject, Injectable } from '@nestjs/common';
 import type { RedisClientType } from '@redis/client';
-import UserService from '../user/service';
 
 @Injectable()
 class RedisService<T_DataType> {
   constructor(
     @Inject('REDIS_CLIENT')
     private readonly redisClient: RedisClientType,
-    private readonly userService: UserService,
   ) {}
+
+  confirmationStringType(value: unknown): value is string {
+    return (value as string)?.length !== undefined;
+  }
 
   createKey(rootKey: string, nestedKey: string) {
     return `${rootKey}:${nestedKey}`;
@@ -22,7 +24,7 @@ class RedisService<T_DataType> {
 
     const data = await this.redisClient.get(key);
 
-    const parsedData = this.userService.confirmationStringType(data)
+    const parsedData = this.confirmationStringType(data)
       ? JSON.parse(data)
       : null;
 

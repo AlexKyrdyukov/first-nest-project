@@ -8,8 +8,6 @@ import CryptoService from './crypto/service';
 import CryptoModule from './crypto/module';
 import { RolesGuard } from './roles/rolesGuard';
 import { APP_GUARD } from '@nestjs/core';
-import { HeroesGameModule } from './heroes/module';
-
 @Module({
   imports: [
     DatabaseModule,
@@ -18,7 +16,6 @@ import { HeroesGameModule } from './heroes/module';
     UserModule,
     AuthModule,
     CryptoModule,
-    HeroesGameModule,
   ],
   providers: [
     CryptoService,

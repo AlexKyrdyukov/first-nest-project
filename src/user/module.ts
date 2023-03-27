@@ -1,24 +1,24 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import UserService from './service';
+// import UserService from './service';
 import RedisModule from '../redis/module';
 import UserController from './controllers';
 import TokenService from '../token/service';
 import UserEntity from '../db/entities/User';
 import { AuthGuard } from '../auth/authGuard';
 import CryptoModule from '../crypto/module';
+import { CqrsModule } from '@nestjs/cqrs';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
     forwardRef(() => RedisModule),
     CryptoModule,
+    CqrsModule,
   ],
-  // imports: [TypeOrmModule.forFeature([UserEntity])],
-  providers: [UserService, AuthGuard, TokenService],
-  // providers: [UserService, AuthGuard],
+  providers: [AuthGuard, TokenService],
   controllers: [UserController],
-  exports: [UserService],
+  exports: [],
 })
 class UserModule {}
 
