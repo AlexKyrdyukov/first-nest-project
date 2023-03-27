@@ -13,9 +13,9 @@ import { User } from '../../../auth/models/userModels';
 export class SignInUserHandler implements ICommandHandler<SignInUserCommand> {
   constructor(
     @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
-    private crypto: CryptoService,
-    private tokenService: TokenService,
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly crypto: CryptoService,
+    private readonly tokenService: TokenService,
     private readonly publisher: EventPublisher,
   ) {}
 

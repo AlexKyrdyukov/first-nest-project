@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsPositive } from 'class-validator';
+import { IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator';
 
 export class DeleteUserDto {
   @ApiProperty({ example: 24, description: 'user uniq identificator' })
-  @IsInt()
-  @IsPositive()
-  userId: number;
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
 }

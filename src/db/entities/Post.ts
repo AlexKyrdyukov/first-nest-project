@@ -78,6 +78,7 @@ class Post {
     () => CategoryEntity,
     (category: CategoryEntity) => category.posts,
   )
+  @typeorm.JoinTable()
   categories: CategoryEntity[];
 }
 

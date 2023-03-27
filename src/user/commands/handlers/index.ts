@@ -1,4 +1,13 @@
 import { PatchDataHandler } from './patchDataHandler';
 import { PatchPasswordHandler } from './patchPasswordHandler';
+import { RemoveUserHandler } from './removeUserHandler';
+import { SetAvatarHandler } from './setAvatarhandler';
+import { CreatePostHandler } from './createPostHandler';
 
-export const CommandHandlers = [PatchDataHandler, PatchPasswordHandler];
+export const CommandHandlers = [
+  PatchDataHandler,
+  PatchPasswordHandler,
+  RemoveUserHandler,
+  SetAvatarHandler,
+  CreatePostHandler,
+];

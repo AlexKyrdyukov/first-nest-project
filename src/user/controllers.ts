@@ -1,4 +1,5 @@
-import { PatchDataCommand } from './commands/implementations/patchData';
+import { CreatePostCommand } from './commands/implementations/createPostCommand';
+import { PatchDataCommand } from './commands/implementations/patchDataCommand';
 import {
   Body,
   Controller,
@@ -10,6 +11,7 @@ import {
   UseGuards,
   BadRequestException,
   ValidationPipe,
+  HttpCode,
 } from '@nestjs/common';
 
 import {
@@ -30,6 +32,10 @@ import { PatchDataDto } from './dto/patchDataDto';
 import { PatchPasswordDto } from './dto/patchPassword.dto';
 import { SetAvatarUserDto } from './dto/setAvatarDto';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { PatchPasswordCommand } from './commands/implementations/patchPasswordCommand';
+import { RemoveUserCommand } from './commands/implementations/removeUserCommand';
+import { SetAvatarCommand } from './commands/implementations/setAvatarCommand';
+import { CreatePostDto } from './dto/createPostDto';
 
 @ApiTags('user api')
 @Controller('user')
@@ -41,34 +47,38 @@ class UserController {
     private readonly queryBus: QueryBus,
   ) {}
 
-  // @ApiOperation({ summary: 'delete user' })
-  // @ApiParam({
-  //   type: UserParamDto,
-  //   name: 'userId',
-  // })
-  // @ApiResponse({ status: 204 })
-  // @Delete(':userId')
-  // async delete(@Param() param: DeleteUserDto, @User() userDto: UserEntity) {
-  //   // return this.userService.delete(userDto);
-  // }
+  @ApiOperation({ summary: 'delete user' })
+  @ApiParam({
+    type: UserParamDto,
+    name: 'userId',
+  })
+  @ApiResponse({ status: 204 })
+  @Delete(':userId')
+  async delete(
+    @Param(new ValidationPipe()) param: DeleteUserDto,
+    @User() userDto: UserEntity,
+  ) {
+    return this.commandBus.execute(new RemoveUserCommand(userDto));
+  }
 
-  // @ApiOperation({ summary: 'update user password ' })
-  // @ApiBody({
-  //   type: PatchPasswordDto,
-  // })
-  // @ApiParam({
-  //   type: UserParamDto,
-  //   name: 'userId',
-  // })
-  // @ApiResponse({ status: 200 })
-  // @Patch(':userId/password')
-  // async patchUserPassword(
-  //   @Body()
-  //   body: PatchPasswordDto,
-  //   @User() userDto: UserEntity,
-  // ) {
-  //   // return this.userService.updateUserPass(body, userDto);
-  // }
+  @ApiOperation({ summary: 'update user password ' })
+  @ApiBody({
+    type: PatchPasswordDto,
+  })
+  @ApiParam({
+    type: UserParamDto,
+    name: 'userId',
+  })
+  @ApiResponse({ status: 200 })
+  @Patch(':userId/password')
+  @HttpCode(204)
+  async patchUserPassword(
+    @Body(new ValidationPipe())
+    body: PatchPasswordDto,
+    @User() userDto: UserEntity,
+  ) {
+    return this.commandBus.execute(new PatchPasswordCommand(body, userDto));
+  }
 
   @ApiOperation({ summary: 'update all user properties except password ' })
   @ApiBody({
@@ -88,22 +98,39 @@ class UserController {
     return this.commandBus.execute(new PatchDataCommand(body, userDto));
   }
 
-  // @ApiOperation({ summary: 'set user avatar' })
-  // @ApiBody({
-  //   type: SetAvatarUserDto,
-  // })
-  // @ApiParam({
-  //   type: UserParamDto,
-  //   name: 'userId',
-  // })
-  // @ApiResponse({ status: 200, type: UserEntity })
-  // @Post(':userId/avatar')
-  // async setUserAvatar(
-  //   @Body() body: SetAvatarUserDto,
-  //   @User() userDto: UserEntity,
-  // ) {
-  //   // return this.userService.update(body, us  erDto);
-  // }
+  @ApiOperation({ summary: 'set user avatar' })
+  @ApiBody({
+    type: SetAvatarUserDto,
+  })
+  @ApiParam({
+    type: UserParamDto,
+    name: 'userId',
+  })
+  @ApiResponse({ status: 200, type: UserEntity })
+  @Post(':userId/avatar')
+  async setUserAvatar(
+    @Body(new ValidationPipe()) body: SetAvatarUserDto,
+    @User() userDto: UserEntity,
+  ) {
+    return this.commandBus.execute(new SetAvatarCommand(body.avatar, userDto));
+  }
+
+  @ApiOperation({ summary: 'create post' })
+  @ApiBody({
+    type: CreatePostDto, // postdto
+  })
+  @ApiParam({
+    type: UserParamDto,
+    name: 'userId',
+  })
+  @ApiResponse({ status: 200, type: UserEntity })
+  @Post(':userId/post')
+  async createPost(
+    @Body(new ValidationPipe()) body: CreatePostDto,
+    @User() userDto: UserEntity,
+  ) {
+    return this.commandBus.execute(new CreatePostCommand(body, userDto));
+  }
 }
 
 export default UserController;

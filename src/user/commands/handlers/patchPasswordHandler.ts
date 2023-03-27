@@ -1,13 +1,34 @@
-import { PatchPasswordCommand } from './../implementations/patchPassword';
+import { PatchPasswordCommand } from '../implementations/patchPasswordCommand';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import CryptoService from '../../../crypto/service';
+import { InjectRepository } from '@nestjs/typeorm';
+import UserEntity from '../../../db/entities/User';
+import config from '../../../config';
+import { Repository } from 'typeorm';
 
 @CommandHandler(PatchPasswordCommand)
 export class PatchPasswordHandler
   implements ICommandHandler<PatchPasswordCommand>
 {
-  // constructor() {}
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly cryptoService: CryptoService,
+  ) {}
+
   async execute(command: PatchPasswordCommand): Promise<any> {
-    console.log('command', command);
-    return command;
+    const { patchPasswordDto, user } = command;
+    const { password, newPassword } = patchPasswordDto;
+    await this.cryptoService.checkValid(user.password, password);
+
+    const newHash = await this.cryptoService.hashString(
+      newPassword,
+      config.hash.salt,
+    );
+
+    await this.userRepository.save({
+      ...user,
+      password: String(newHash),
+    });
   }
 }

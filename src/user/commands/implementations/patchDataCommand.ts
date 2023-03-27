@@ -1,4 +1,4 @@
-import { PatchDataDto } from '../../../user/dto/patchDataDto';
+import { PatchDataDto } from '../../dto/patchDataDto';
 import UserEntity from '../../../db/entities/User';
 
 export class PatchDataCommand {
