@@ -51,7 +51,7 @@ class TokenService {
     });
   }
 
-  async createTokens(userId: string, deviceId: string) {
+  async createTokens(userId: number, deviceId: string) {
     // todo: Promise.all
     const arrayTypesTokens: ExpiresIn[] = ['access', 'refresh'];
 

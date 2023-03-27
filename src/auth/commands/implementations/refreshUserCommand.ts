@@ -1,9 +1,8 @@
-import { DeviceIdDto } from '../../dto/deviceIdDto';
 import { RefreshTokenDto } from '../../dto/refreshDto';
 
 export class RefreshUserCommand {
   constructor(
-    private readonly refreshToken: RefreshTokenDto,
-    private readonly deviceId: DeviceIdDto,
+    private readonly refresUserDto: RefreshTokenDto,
+    private readonly deviceId: string,
   ) {}
 }

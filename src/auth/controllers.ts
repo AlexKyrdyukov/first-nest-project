@@ -1,3 +1,4 @@
+import { RefreshUserCommand } from './commands/implementations/refreshUserCommand';
 import {
   Body,
   Controller,
@@ -25,6 +26,9 @@ import { ReturnSignUpDto, SignUpUserDto } from './dto/signUpUserDto';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { DeviceIdDto } from './dto/deviceIdDto';
 import { SignUpUserCommand } from './commands/implementations/signUpUserCommand';
+import { ReturnSignInDto, SignInUserDto } from './dto/signInUserDto';
+import { SignInUserCommand } from './commands/implementations/signInUserCommand';
+import { RefreshRouteResponse, RefreshTokenDto } from './dto/refreshDto';
 
 @ApiTags('auth api')
 @Controller('auth')
@@ -34,18 +38,21 @@ class AuthController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
-  // @ApiOperation({
-  //   summary: 'authorization user in system, return user with tokens',
-  // })
-  // @ApiBody({ type: SignInUserDto })
-  // @ApiResponse({ status: 200, type: ReturnSignInDto })
-  // @Post('sign-in')
-  // async signIn(
-  //   @Body(new JoiValidationPipe(signInSchema)) dto: SignInUserDto,
-  //   @Headers() headers: DeviceIdDto,
-  // ) {
-  //   // return this.authService.signIn(dto, headers);
-  // }
+
+  @ApiOperation({
+    summary: 'authorization user in system, return user with tokens',
+  })
+  @ApiBody({ type: SignInUserDto })
+  @ApiResponse({ status: 200, type: ReturnSignInDto })
+  @Post('sign-in')
+  async signIn(
+    @Body(new ValidationPipe()) dto: SignInUserDto,
+    @Headers() headers: DeviceIdDto,
+  ): Promise<ReturnSignInDto> {
+    return this.commandBus.execute(
+      new SignInUserCommand(dto, headers.device_id),
+    );
+  }
 
   @ApiOperation({ summary: 'created user with tokens' })
   @ApiBody({ type: SignUpUserDto })
@@ -55,7 +62,7 @@ class AuthController {
   async signUp(
     @Body(new ValidationPipe()) dto: SignUpUserDto,
     @Headers() headers: DeviceIdDto,
-  ) {
+  ): Promise<ReturnSignUpDto> {
     return this.commandBus.execute(
       new SignUpUserCommand(dto, headers.device_id),
     );
@@ -71,17 +78,18 @@ class AuthController {
   //   return user;
   // }
 
-  // @ApiOperation({ summary: 'refresh user token' })
-  // @ApiBody({ type: RefreshTokenDto })
-  // @ApiResponse({ status: 201, type: RefreshRouteResponse })
-  // @Post('refresh')
-  // @UsePipes(new JoiValidationPipe(refreshSchema))
-  // async refresh(
-  //   @Body() dto: RefreshTokenDto,
-  //   @Headers('device_id') deviceId: DeviceIdDto['device_id'],
-  // ): Promise<RefreshRouteResponse> {
-  //   return this.authService.refresh(dto, deviceId);
-  // }
+  @ApiOperation({ summary: 'refresh user token' })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiResponse({ status: 201, type: RefreshRouteResponse })
+  @Post('refresh')
+  async refresh(
+    @Body(new ValidationPipe()) dto: RefreshTokenDto,
+    @Headers() headers: DeviceIdDto,
+  ): Promise<RefreshRouteResponse> {
+    return this.commandBus.execute(
+      new RefreshUserCommand(dto, headers.device_id),
+    );
+  }
 }
 
 export default AuthController;

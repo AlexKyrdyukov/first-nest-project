@@ -14,7 +14,7 @@ export class SignInUserDto {
   @IsNotEmpty({ message: 'must be only  valid email' })
   @IsString({ message: 'must be only string' })
   @MaxLength(30)
-  @MaxLength(3)
+  @MinLength(3)
   email: string;
 
   @ApiProperty({ example: '123qwerty', description: 'user password' })

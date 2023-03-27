@@ -36,7 +36,7 @@ class Role {
     example: 'cars',
     description: 'post category',
   })
-  @typeorm.Column({ nullable: true })
+  @typeorm.Column({ nullable: false, unique: true })
   name?: string;
 
   @ApiProperty({

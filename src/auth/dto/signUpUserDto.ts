@@ -42,7 +42,7 @@ export class SignUpUserDto {
   @IsNotEmpty()
   @IsIn(validRoles, { each: true })
   @Matches('^[a-zA-Z\\s]+$', undefined, { each: true })
-  role: string[];
+  roles: string[];
 
   @ValidateNested({ each: true })
   @IsInstance(UserAddresDto)
