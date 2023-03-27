@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  MinLength,
+  IsDefined,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserAddressDto {
@@ -26,6 +32,7 @@ export class UserAddressDto {
     example: 'Obema chmo street',
     description: 'stret of location',
   })
+  @IsDefined() // why dont work
   @IsString()
   @IsNotEmpty()
   @MaxLength(40)

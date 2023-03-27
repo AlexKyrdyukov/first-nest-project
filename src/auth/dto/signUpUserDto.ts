@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserAddresDto } from './userAddressDto';
+import { UserAddressDto } from './userAddressDto';
 import UserEntity from '../../db/entities/User';
 
 const validRoles = ['admin', 'user', 'intern', 'develop', 'tester'];
@@ -44,10 +44,11 @@ export class SignUpUserDto {
   @Matches('^[a-zA-Z\\s]+$', undefined, { each: true })
   roles: string[];
 
+  @ApiProperty({ description: 'user address', type: UserAddressDto })
   @ValidateNested({ each: true })
-  @IsInstance(UserAddresDto)
-  @Type(() => UserAddresDto)
-  address: UserAddresDto;
+  @IsInstance(UserAddressDto)
+  @Type(() => UserAddressDto)
+  address: UserAddressDto;
 }
 
 export class SignUpResponse {

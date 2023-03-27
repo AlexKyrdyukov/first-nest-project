@@ -9,6 +9,7 @@ import UserEntity from '../db/entities/User';
 import { AuthGuard } from '../auth/authGuard';
 import CryptoModule from '../crypto/module';
 import { CqrsModule } from '@nestjs/cqrs';
+import { CommandHandlers } from './commands/handlers';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
@@ -16,7 +17,9 @@ import { CqrsModule } from '@nestjs/cqrs';
     CryptoModule,
     CqrsModule,
   ],
-  providers: [AuthGuard, TokenService],
+  // providers: [AuthGuard, TokenService],
+  providers: [...CommandHandlers, TokenService],
+
   controllers: [UserController],
   exports: [],
 })
