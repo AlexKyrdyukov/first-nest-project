@@ -11,6 +11,7 @@ import PostEntity from '../db/entities/Post';
 import CategoriesEntity from '../db/entities/Categories';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CommandHandlers } from './commands/handlers';
+import CommentEntity from '../db/entities/Comment';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -18,6 +19,7 @@ import { CommandHandlers } from './commands/handlers';
       AddressEntity,
       PostEntity,
       CategoriesEntity,
+      CommentEntity,
     ]),
     forwardRef(() => RedisModule),
     CryptoModule,

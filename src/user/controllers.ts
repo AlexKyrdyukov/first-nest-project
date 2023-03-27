@@ -30,12 +30,15 @@ import { UserParamDto } from './dto/userParamDto';
 import { DeleteUserDto } from './dto/deleteUserDto';
 import { PatchDataDto } from './dto/patchDataDto';
 import { PatchPasswordDto } from './dto/patchPassword.dto';
+import PostEntity from '../db/entities/Post';
 import { SetAvatarUserDto } from './dto/setAvatarDto';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { PatchPasswordCommand } from './commands/implementations/patchPasswordCommand';
 import { RemoveUserCommand } from './commands/implementations/removeUserCommand';
 import { SetAvatarCommand } from './commands/implementations/setAvatarCommand';
 import { CreatePostDto } from './dto/createPostDto';
+import { CreateCommentDto } from './dto/createCommentDto';
+import { CreateCommentCommand } from './commands/implementations/createCommentCommand';
 
 @ApiTags('user api')
 @Controller('user')
@@ -123,13 +126,30 @@ class UserController {
     type: UserParamDto,
     name: 'userId',
   })
-  @ApiResponse({ status: 200, type: UserEntity })
+  @ApiResponse({ status: 200, type: PostEntity })
   @Post(':userId/post')
   async createPost(
     @Body(new ValidationPipe()) body: CreatePostDto,
     @User() userDto: UserEntity,
   ) {
     return this.commandBus.execute(new CreatePostCommand(body, userDto));
+  }
+
+  @ApiOperation({ summary: 'create comment' })
+  @ApiBody({
+    type: CreateCommentDto,
+  })
+  @ApiParam({
+    type: UserParamDto,
+    name: 'userId',
+  })
+  @ApiResponse({ status: 200, type: PostEntity })
+  @Post(':userId/comment')
+  async createComment(
+    @Body(new ValidationPipe()) body: CreateCommentDto,
+    @User() userDto: UserEntity,
+  ) {
+    return this.commandBus.execute(new CreateCommentCommand(body, userDto));
   }
 }
 

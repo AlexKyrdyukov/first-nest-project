@@ -47,8 +47,8 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
       categories: createdCategories,
       author: userDto,
     });
-    console.log(newPost);
     await this.postRepository.save(newPost);
-    return newPost;
+    const { author, ...post } = newPost;
+    return post;
   }
 }
