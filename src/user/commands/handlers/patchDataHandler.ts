@@ -21,11 +21,12 @@ export class PatchDataHandler implements ICommandHandler<PatchDataCommand> {
       ...user.address,
       ...address,
     });
+
     const newUser = await this.userRepository.save({
       ...user,
       email,
       fullName,
-      ...newAddress,
+      address: newAddress,
     });
 
     const { password, ...returnudUser } = newUser;

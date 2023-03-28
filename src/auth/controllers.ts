@@ -20,7 +20,7 @@ import {
 
 import { AuthGuard } from './authGuard';
 import UserEntity from '../db/entities/User';
-import { User } from 'src/user/user.decorator';
+import { User } from '../user/user.decorator';
 import { Roles } from '../roles/rolesDecorator';
 import { SignUpResponse, SignUpUserDto } from './dto/signUpUserDto';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
