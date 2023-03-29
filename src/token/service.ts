@@ -9,7 +9,7 @@ type ExpiresIn = keyof typeof config.token.expiresIn;
 
 @Injectable()
 class TokenService {
-  constructor(private redisRepository: RedisService<string>) {}
+  constructor(private redisRepository: RedisService) {}
 
   async asyncSign<P extends object>(
     payload: P,

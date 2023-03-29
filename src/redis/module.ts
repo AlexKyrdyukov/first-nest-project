@@ -6,12 +6,12 @@ import UserModule from '../user/module';
 // import UserService from '../user/service';
 
 @Module({
-  // imports: [UserModule],
-  // imports: [UserModule]
-  imports: [forwardRef(() => UserModule)],
-  providers: [...redisProviders, RedisService, ConfigService, UserModule],
+  // imports: [forwardRef(() => UserModule)],
+  providers: [...redisProviders, RedisService, ConfigService],
   exports: [...redisProviders, RedisService],
 })
-class RedisModule {}
+class RedisModule {
+  static forRoot: any;
+}
 
 export default RedisModule;

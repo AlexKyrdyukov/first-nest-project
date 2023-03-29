@@ -11,13 +11,19 @@ class CryptoService {
   async createSalt(length: number) {
     return randBytes(length)
       .then((value) => value.toString('hex'))
-      .catch((error) => console.error(error));
+      .catch((error) => error);
   }
 
   async hashString(stringData: string, salt: string) {
-    return pbkdf2Async(stringData, salt, 1000, 64, config.hash.algorithm)
+    return pbkdf2Async(
+      String(stringData),
+      String(salt),
+      1000,
+      64,
+      config.hash.algorithm,
+    )
       .then((value) => value.toString('hex'))
-      .catch((error) => console.error(error));
+      .catch((error) => error);
   }
 
   async checkValid(hash: string, userPassword: string) {

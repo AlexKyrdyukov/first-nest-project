@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { RedisClientType } from '@redis/client';
 
 @Injectable()
-class RedisService<T_DataType> {
+class RedisService {
   constructor(
     @Inject('REDIS_CLIENT')
     private readonly redisClient: RedisClientType,
@@ -19,7 +19,8 @@ class RedisService<T_DataType> {
     return `${rootKey}:${nestedKey}`;
   }
 
-  get = async (rootKey: string, nestedKey: string): Promise<T_DataType> => {
+  get = async (rootKey: string, nestedKey: string): Promise<string | null> => {
+    // change type
     const key = this.createKey(rootKey, nestedKey);
 
     const data = await this.redisClient.get(key);
@@ -30,10 +31,11 @@ class RedisService<T_DataType> {
 
     return parsedData;
   };
+
   set = async (
     rootKey: string,
     nestedKey: string,
-    value: T_DataType,
+    value: string,
     expiresIn: string,
   ) => {
     const key = this.createKey(rootKey, nestedKey);
