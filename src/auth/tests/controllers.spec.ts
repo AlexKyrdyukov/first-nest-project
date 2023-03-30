@@ -50,7 +50,7 @@ describe('auth controller ', () => {
       expect(er).toBeInstanceOf(BadRequestException);
       expect(er.message).toBe(['']);
     }
-
+  })
   //   // const userRepoSaveSpy = jest.spyOn(userRepository, 'findOne').mockResolvedValue()
   //   // console.log(authController);
   //   // expect(

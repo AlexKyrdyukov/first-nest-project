@@ -64,6 +64,8 @@ export class AuthGuard implements CanActivate {
       .where('user.userId = :userId', { userId })
       .leftJoinAndSelect('user.address', 'address')
       .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('user.comment', 'comment')
+      .leftJoinAndSelect('user.posts', 'posts')
       .addSelect('user.password')
       .getOne();
 

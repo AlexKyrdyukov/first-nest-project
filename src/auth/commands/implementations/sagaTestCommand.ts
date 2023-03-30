@@ -1,6 +1,3 @@
 export class SagaTestCommand {
-  constructor(
-    private readonly name: string,
-    private readonly lastName: string,
-  ) {}
+  constructor(public readonly name: string, public readonly lastName: string) {}
 }
