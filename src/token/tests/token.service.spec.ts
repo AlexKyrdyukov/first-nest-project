@@ -39,14 +39,13 @@ describe('token service test', () => {
   });
 
   it('check func async sign', async () => {
-    console.log(service.createTokens(1, '222'));
     const res = await service.asyncSign({ iserId: '1' }, config.token.secret, {
       expiresIn: config.token.expiresIn.access,
     });
     expect(res).toBeDefined();
   });
 
-  it('check func async verify', async () => {
+  it('check func async verify wih unexpected data', async () => {
     try {
       const res = await service.asyncVerify(
         'dfgdfgdfgdf',

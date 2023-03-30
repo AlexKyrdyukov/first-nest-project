@@ -5,7 +5,9 @@ import {
   Get,
   Headers,
   Post,
+  Request,
   UseGuards,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 
@@ -18,7 +20,15 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { AuthGuard } from './authGuard';
+import {
+  AuthGuard,
+  LoggingInterceptor,
+  WrapDataInterceptor,
+  ExcludeNullInterceptor,
+  ErrorsInterceptor,
+  CacheInterceptor,
+  TimeoutInterceptor,
+} from './authGuard';
 import UserEntity from '../db/entities/User';
 import { User } from '../user/user.decorator';
 import { Roles } from '../roles/rolesDecorator';
@@ -29,10 +39,17 @@ import { SignUpUserCommand } from './commands/implementations/signUpUserCommand'
 import { SignInResponse, SignInUserDto } from './dto/signInUserDto';
 import { SignInUserCommand } from './commands/implementations/signInUserCommand';
 import { RefreshResponse, RefreshTokenDto } from './dto/refreshDto';
+// import { Request } from 'express';
 
 @ApiTags('auth api')
-@Controller('auth')
+// @UseInterceptors(WrapDataInterceptor)
+// @UseInterceptors(LoggingInterceptor)
+// @UseInterceptors(ExcludeNullInterceptor)
+// @UseInterceptors(ErrorsInterceptor)
+// @UseInterceptors(TimeoutInterceptor)
+// @UseInterceptors(CacheInterceptor)
 @ApiHeader({ name: 'deviceId' })
+@Controller('auth')
 class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
