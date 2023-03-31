@@ -1,39 +1,22 @@
-import PostEntity from '../../../db/entities/Post';
+import RoleEntity from '../../../db/entities/Role';
 
-export class PostRepositoryFake {
+export class RoleRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public create() {
+  public create(): Partial<RoleEntity> {
     return {
-      post: {
-        postId: 1,
-        content: 'post content',
-        title: 'post title',
-        comments: [],
-      },
+      roleId: 1,
+      name: 'admin',
     };
   }
-
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async save() {
-    return {
-      author: {},
-      post: {
-        postId: 1,
-        content: 'post content',
-        title: 'post title',
-        comments: [],
-      },
-    };
-  }
+  public async save(): Promise<void> {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async remove(): Promise<void> {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async findOne(): Promise<Partial<PostEntity>> {
+  public async findOne(): Promise<Partial<RoleEntity>> {
     return {
-      postId: 1,
-      content: 'post content',
-      title: 'post title',
-      comments: [],
+      roleId: 1,
+      name: 'admin',
     };
   }
 

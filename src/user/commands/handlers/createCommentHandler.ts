@@ -28,7 +28,6 @@ export class CreateCommentHandler
       },
     });
     if (!post) {
-      console.log(35);
       return;
     }
 
@@ -44,7 +43,6 @@ export class CreateCommentHandler
       comments: [...post.comments, newComment],
     });
     const { author, ...savedPost } = updatedPost;
-    console.log(savedPost);
     return savedPost;
   }
 }

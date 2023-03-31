@@ -1,76 +1,66 @@
-import { BadRequestException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { SignInUserHandler } from './../commands/handlers/signInUserHandler';
+import { SignInUserCommand } from './../commands/implementations/signInUserCommand';
+import { CommandBus, QueryBus, EventPublisher, EventBus } from '@nestjs/cqrs';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { createMock } from '@golevelup/ts-jest';
+import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import AuthController from '../controllers';
-import { CommandHandlers } from '../commands/handlers';
-import TokenModule from '../../token/module';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import TokenService from '../../token/service';
+import RedisService from '../../redis/service';
 import UserEntity from '../../db/entities/User';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserRepositoryFake } from './fakeRepositories/FakeUserRepository';
+import RedisClient from '@redis/client/dist/lib/client';
+import CryptoService from '../../crypto/service';
 
-class UserRepositoryFake {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public create(): void {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async save(): Promise<void> {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async remove(): Promise<void> {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async findOne(): Promise<void> {}
-}
-
-describe('auth controller ', () => {
-  let authController: AuthController;
-  let userRepository: Repository<UserEntity>;
+describe('check user repository', () => {
+  let app: INestApplication;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [AuthController],
       providers: [
+        TokenService,
+        {
+          provide: CommandBus,
+          useValue: { execute: () => { } },
+        },
+        {
+          provide: RedisService,
+          useValue: RedisService,
+        },
         {
           provide: getRepositoryToken(UserEntity),
           useClass: UserRepositoryFake,
         },
       ],
-      imports: [TokenModule],
+      controllers: [AuthController],
     }).compile();
-    authController = module.get<AuthController>(AuthController);
-    // userRepository = module.get(getRepositoryToken(UserEntity));
-    console.log(module);
+
+    app = module.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe());
+    await app.init();
   });
 
-  it('check work controller', async () => {
-    const newLocal = 'sdffdfsdf';
-    console.log('1234', authController);
-    try {
-      await authController.signIn(
-        { email: '', password: '' },
-        { device_id: 'fdfdfdf' },
-      );
-    } catch (er) {
-      expect(er).toBeInstanceOf(BadRequestException);
-      expect(er.message).toBe(['']);
-    }
-  })
-  //   // const userRepoSaveSpy = jest.spyOn(userRepository, 'findOne').mockResolvedValue()
-  //   // console.log(authController);
-  //   // expect(
-  //   //   authController.signIn(
-  //   //     { email: 'dfdf', password: newLocal },
-  //   //     { device_id: 'dfdfdfd' },
-  //   //   ),
-  //   // ).toBe({
-  //   //   email: 'ddfdfdfd',
-  //   // });
-  // // });
-  // // // beforeEach(async () => {
-  // //   const moduleRef = await Test.createTestingModule({
-  // //     controllers: [AuthController],
-  // //     providers: [...CommandHandlers],
-  // //   }).compile();
-  // //   authController = moduleRef.get<AuthController>(AuthController)
-  // // })
-  // // describe('sign Up', () => {
-  // //   it('should create user with tokens', async () => {
+  it('check sign in controller', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send({
+        headers: {
+          deviceId: '1111111111111',
+        },
+        email: 'user@mail.com',
+        password: '123',
+      })
+      .expect(200);
+  });
 
-  // //   })
+  it('check sign up controller', async () => {
+    const res = await request(app.getHttpServer()).post('/auth/sign-up').send({
+      usr: 'dddddd',
+    });
+    // .expect(201)
+    // .expect({});
+    console.log('11111111111', res.error);
+  });
 });

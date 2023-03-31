@@ -1,7 +1,7 @@
+import { HttpException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateCommentHandler } from '../../../user/commands/handlers/createCommentHandler';
-import { UserRepositoryFake } from '../../../auth/tests/FakeUserRepository';
 import { CommentRepositoryFake } from '../fakeRepositories/fakeCommentRepositories';
 import CommentEntity from '../../../db/entities/Comment';
 import PostEntity from '../../../db/entities/Post';
@@ -15,16 +15,17 @@ describe('check create comment handler', () => {
         CreateCommentHandler,
         {
           provide: getRepositoryToken(CommentEntity),
-          useValue: CommentRepositoryFake,
+          useClass: CommentRepositoryFake,
         },
         {
           provide: getRepositoryToken(PostEntity),
-          useValue: PostRepositoryFake,
+          useClass: PostRepositoryFake,
         },
       ],
     }).compile();
     createComment = module.get(CreateCommentHandler);
   });
+
   it('check create comment handler', async () => {
     const handlerParams = {
       createCommentDto: {
@@ -36,21 +37,39 @@ describe('check create comment handler', () => {
         email: 'user@mail.ru',
         password: '123',
         fullName: 'name',
-        // createdDate: '3/7/2022, 4:11:58 PM' as Date, // '123', // as unknown as Date,
-        // updatedDate: '123' as unknown as Date,
-        // deletedDate: '123' as unknown as Date,
-        // posts: ['post'],
-        // comment: ['comments'],
-        // roles: ['roles'],
         avatar: 'avatar',
-        // address: {
-        //   country: 'Russia',
-        //   city: 'Moscow',
-        //   street: 'Petrovskaya',
-        // },
       },
     };
     const res = await createComment.execute(handlerParams);
-    expect(res).toBeDefined();
+    expect(res).toStrictEqual({
+      post: {
+        postId: 1,
+        content: 'post content',
+        title: 'post title',
+        comments: [],
+      },
+    });
+  });
+
+  it('check create comment handler if func throw error', async () => {
+    const handlerParams = {
+      createCommentDto: {
+        content: 'text comment',
+        postId: 3,
+      },
+      userDto: {
+        userId: 2,
+        email: 'user@mail.ru',
+        password: '123',
+        fullName: 'name',
+        avatar: 'avatar',
+      },
+    };
+    try {
+      await createComment.execute(handlerParams);
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+      expect(error.message).toBeDefined();
+    }
   });
 });

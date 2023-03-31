@@ -1,19 +1,13 @@
-import UserEntity from '../../db/entities/User';
-import AddressEntity from '../../db/entities/Address';
+import AddressEntity from '../../../db/entities/Address';
 
 export class AddressRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public create(): Partial<{
-    address: Partial<AddressEntity>;
-    user: Partial<UserEntity>;
-  }> {
+  public create() {
     return {
-      // address: {
       addresId: 1,
       city: 'Moscow',
       country: 'Russia',
       street: 'Petrovskaya',
-      // },
       user: {
         userId: 1,
         email: 'user@mail.ru',
@@ -23,9 +17,9 @@ export class AddressRepositoryFake {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async save(): Promise<void> { }
+  public async save(): Promise<void> {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async remove(): Promise<void> { }
+  public async remove(): Promise<void> {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async findOne(): Promise<Partial<AddressEntity>> {
     return {

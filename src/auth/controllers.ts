@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Headers,
+  HttpCode,
   Post,
   Request,
   UseGuards,
@@ -33,7 +34,7 @@ import UserEntity from '../db/entities/User';
 import { User } from '../user/user.decorator';
 import { Roles } from '../roles/rolesDecorator';
 import { SignUpResponse, SignUpUserDto } from './dto/signUpUserDto';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { DeviceIdDto } from './dto/deviceIdDto';
 import { SignUpUserCommand } from './commands/implementations/signUpUserCommand';
 import { SignInResponse, SignInUserDto } from './dto/signInUserDto';
@@ -51,10 +52,7 @@ import { RefreshResponse, RefreshTokenDto } from './dto/refreshDto';
 @ApiHeader({ name: 'deviceId' })
 @Controller('auth')
 class AuthController {
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @ApiOperation({
     summary: 'authorization user in system, return user with tokens',
@@ -62,6 +60,7 @@ class AuthController {
   @ApiBody({ type: SignInUserDto })
   @ApiResponse({ status: 200, type: SignInResponse })
   @Post('sign-in')
+  @HttpCode(200)
   async signIn(
     @Body(new ValidationPipe()) dto: SignInUserDto,
     @Headers() headers: DeviceIdDto,

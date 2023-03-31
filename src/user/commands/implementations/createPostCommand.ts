@@ -4,6 +4,6 @@ import UserEntity from '../../../db/entities/User';
 export class CreatePostCommand {
   constructor(
     public readonly postDto: CreatePostDto,
-    public readonly userDto: UserEntity,
+    public readonly userDto: Partial<UserEntity>,
   ) {}
 }

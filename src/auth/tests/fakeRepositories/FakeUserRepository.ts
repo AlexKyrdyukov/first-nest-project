@@ -1,4 +1,4 @@
-import UserEntity from '../../db/entities/User';
+import UserEntity from '../../../db/entities/User';
 
 export class UserRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -10,7 +10,14 @@ export class UserRepositoryFake {
     };
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async save(): Promise<void> {}
+  public async save(): Promise<Partial<UserEntity>> {
+    return {
+      password: '123',
+      email: 'user@mail.com',
+      userId: 1,
+      fullName: 'Ivan Ivanov',
+    };
+  }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async remove(): Promise<void> {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function

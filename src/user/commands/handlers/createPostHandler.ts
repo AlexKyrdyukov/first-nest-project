@@ -9,8 +9,6 @@ import { Repository } from 'typeorm';
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(PostEntity)
     private readonly postRepository: Repository<PostEntity>,
     @InjectRepository(CategoriesEntity)
@@ -31,10 +29,12 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
           name: item,
         },
       });
+
       if (!existenCategory) {
         const category = this.categoryRepository.create({
           name: item,
         });
+
         await this.categoryRepository.save(category);
         return category;
       }

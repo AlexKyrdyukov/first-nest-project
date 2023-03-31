@@ -6,11 +6,11 @@ import { SignUpUserHandler } from '../../../auth/commands/handlers/signUpUserHan
 import AddressEntity from '../../../db/entities/Address';
 import RoleEntity from '../../../db/entities/Role';
 import UserEntity from '../../../db/entities/User';
-import { UserRepositoryFake } from '../FakeUserRepository';
-import { AddressRepositoryFake } from '../FakeAddressRepository';
+import { UserRepositoryFake } from '../fakeRepositories/FakeUserRepository';
+import { AddressRepositoryFake } from '../fakeRepositories/FakeAddressRepository';
 import TokenService from '../../../token/service';
 import { HttpException } from '@nestjs/common';
-import { RoleRepositoryFake } from '../FakeRoleRepository';
+import { RoleRepositoryFake } from '../fakeRepositories/FakeRoleRepository';
 
 describe('check sign up handler', () => {
   let signUpHandler: SignUpUserHandler;

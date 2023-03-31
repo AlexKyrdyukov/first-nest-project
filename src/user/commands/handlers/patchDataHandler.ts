@@ -29,7 +29,7 @@ export class PatchDataHandler implements ICommandHandler<PatchDataCommand> {
       address: newAddress,
     });
 
-    const { password, ...returnudUser } = newUser;
-    return returnudUser;
+    const { password, ...returnedUser } = newUser;
+    return returnedUser;
   }
 }

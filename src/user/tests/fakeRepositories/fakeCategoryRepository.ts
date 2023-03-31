@@ -1,24 +1,22 @@
-import RoleEntity from '../../db/entities/Role';
+import CategoryEntity from '../../../db/entities/Categories';
 
-export class RoleRepositoryFake {
+export class CategoryRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public create(): Partial<RoleEntity> {
+  public create(): Partial<{ category: Partial<CategoryEntity> }> {
     return {
-      roleId: 1,
-      name: 'admin',
+      category: {
+        categoryId: 1,
+        name: 'name category',
+      },
     };
   }
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async save(): Promise<void> {}
+  public async save(): Promise<void> { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async remove(): Promise<void> {}
+  public async remove(): Promise<void> { }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async findOne(): Promise<Partial<RoleEntity>> {
-    return {
-      roleId: 1,
-      name: 'admin',
-    };
-  }
+  public async findOne(): Promise<void> { }
 
   // public createQueryBuilder = jest.fn(() => ({
   //   addSelect: jest.fn().mockReturnThis(),
