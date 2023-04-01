@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { PatchPasswordHandler } from './../../commands/handlers/patchPasswordHandler';
 import { Test, TestingModule } from '@nestjs/testing';
 import UserEntity from '../../../db/entities/User';
-import { UserRepositoryFake } from '../../../auth/tests/fakeRepositories/FakeUserRepository';
+import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
 import CryptoService from '../../../crypto/service';
 
 describe('test patch password handler', () => {

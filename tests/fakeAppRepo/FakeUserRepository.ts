@@ -1,4 +1,4 @@
-import UserEntity from '../../../db/entities/User';
+import UserEntity from '../../src/db/entities/User';
 
 export class UserRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function

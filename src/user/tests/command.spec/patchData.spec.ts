@@ -1,11 +1,11 @@
 import { HttpException } from '@nestjs/common';
-import { AddressRepositoryFake } from '../../../auth/tests/fakeRepositories/FakeAddressRepository';
+import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddressRepository';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PatchDataHandler } from '../../commands/handlers/patchDataHandler';
 import UserEntity from '../../../db/entities/User';
 import AddressEntity from '../../../db/entities/Address';
-import { UserRepositoryFake } from '../../../auth/tests/fakeRepositories/FakeUserRepository';
+import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
 
 describe('check handler update user data', () => {
   let patchDataHandler: PatchDataHandler;

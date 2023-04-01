@@ -5,7 +5,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import UserEntity from '../../../db/entities/User';
 import TokenService from '../../../token/service';
-import { UserRepositoryFake } from '../fakeRepositories/FakeUserRepository';
+import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
 
 describe('check auth commands', () => {
   let signInHandler: SignInUserHandler;

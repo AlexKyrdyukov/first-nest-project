@@ -3,9 +3,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import UserEntity from '../../../db/entities/User';
 import { RemoveUserHandler } from '../../../user/commands/handlers/removeUserHandler';
-import { UserRepositoryFake } from '../../../auth/tests/fakeRepositories/FakeUserRepository';
+import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
 import AddressEntity from '../../../db/entities/Address';
-import { AddressRepositoryFake } from '../../../auth/tests/fakeRepositories/FakeAddressRepository';
+import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddressRepository';
 
 describe('check handler delete user', () => {
   let removeUserHandler: RemoveUserHandler;

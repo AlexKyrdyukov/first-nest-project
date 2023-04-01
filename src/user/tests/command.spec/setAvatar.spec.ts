@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import UserEntity from '../../../db/entities/User';
 import { SetAvatarHandler } from '../../../user/commands/handlers/setAvatarhandler';
-import { UserRepositoryFake } from '../../../auth/tests/fakeRepositories/FakeUserRepository';
+import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
 
 describe('check set avatar handler', () => {
   let setAvatarHandler: SetAvatarHandler;

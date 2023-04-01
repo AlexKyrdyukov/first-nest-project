@@ -6,11 +6,11 @@ import { SignUpUserHandler } from '../../../auth/commands/handlers/signUpUserHan
 import AddressEntity from '../../../db/entities/Address';
 import RoleEntity from '../../../db/entities/Role';
 import UserEntity from '../../../db/entities/User';
-import { UserRepositoryFake } from '../fakeRepositories/FakeUserRepository';
-import { AddressRepositoryFake } from '../fakeRepositories/FakeAddressRepository';
+import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
+import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddressRepository';
 import TokenService from '../../../token/service';
 import { HttpException } from '@nestjs/common';
-import { RoleRepositoryFake } from '../fakeRepositories/FakeRoleRepository';
+import { RoleRepositoryFake } from '../../../../tests/fakeAppRepo/FakeRoleRepository';
 
 describe('check sign up handler', () => {
   let signUpHandler: SignUpUserHandler;
@@ -66,6 +66,11 @@ describe('check sign up handler', () => {
 
   it('check class sign up command if user exist', async () => {
     const res = await signUpHandler.execute(SignUpUserCommand);
+    const res1 = await signUpHandler.execute({
+      signUpDto: { address: {} },
+    } as typeof SignUpUserCommand);
+    const a = res1.createRoles();
+    console.log(a);
     expect(res).toStrictEqual({
       user: {
         email: 'user@mail.ru',

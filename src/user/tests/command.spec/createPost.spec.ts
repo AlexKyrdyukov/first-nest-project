@@ -1,10 +1,10 @@
 import { HttpException } from '@nestjs/common';
-import { CategoryRepositoryFake } from './../fakeRepositories/fakeCategoryRepository';
+import { CategoryRepositoryFake } from '../../../../tests/fakeAppRepo/fakeCategoryRepository';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreatePostHandler } from '../../../user/commands/handlers/createPostHandler';
 import PostEntity from '../../../db/entities/Post';
-import { PostRepositoryFake } from '../fakeRepositories/fakePostRepoitory';
+import { PostRepositoryFake } from '../../../../tests/fakeAppRepo/fakePostRepoitory';
 import CategoryEntity from '../../../db/entities/Categories';
 
 describe('check create post handler', () => {

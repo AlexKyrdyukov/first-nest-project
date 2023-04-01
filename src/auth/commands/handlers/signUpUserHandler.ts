@@ -56,6 +56,7 @@ export class SignUpUserHandler implements ICommandHandler<SignUpUserCommand> {
         email: user.email,
       },
     });
+
     if (exestingUser) {
       throw new HttpException(
         'user with this email already exist',

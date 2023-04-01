@@ -1,4 +1,4 @@
-import CommentEntity from '../../../db/entities/Comment';
+import CommentEntity from '../../src/db/entities/Comment';
 
 export class CommentRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -17,19 +17,4 @@ export class CommentRepositoryFake {
   public async remove(): Promise<void> {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async findOne(): Promise<void> {}
-
-  // public createQueryBuilder = jest.fn(() => ({
-  //   addSelect: jest.fn().mockReturnThis(),
-  //   where: jest.fn().mockReturnThis(),
-  //   leftJoinAndSelect: jest.fn().mockReturnThis(),
-  //   getOne: jest.fn().mockReturnValue({
-  //     userId: 2,
-  //     email: 'tesst',
-  //     address: {
-  //       city: 'Moscow',
-  //       country: 'Russia',
-  //       street: 'Petrovskaya',
-  //     },
-  //   }),
-  // }));
 }

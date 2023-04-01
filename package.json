@@ -14,6 +14,7 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "typeorm-cli": "ts-node node_modules/typeorm/cli.js --dataSource src/db/config.ts",
     "db:sync": "npm run typeorm-cli -- migration:generate -p src/db/migrations/sync",

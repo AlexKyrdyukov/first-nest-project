@@ -90,7 +90,7 @@ class AuthController {
   @Get('me')
   @UseGuards(AuthGuard)
   async getMe(@User() reqUser: UserEntity) {
-    const { password, ...user } = reqUser;
+    const { password, comment, posts, ...user } = reqUser;
     return user;
   }
 

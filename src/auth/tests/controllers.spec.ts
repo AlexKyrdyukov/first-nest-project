@@ -10,7 +10,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import TokenService from '../../token/service';
 import RedisService from '../../redis/service';
 import UserEntity from '../../db/entities/User';
-import { UserRepositoryFake } from './fakeRepositories/FakeUserRepository';
+import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
 import RedisClient from '@redis/client/dist/lib/client';
 import CryptoService from '../../crypto/service';
 

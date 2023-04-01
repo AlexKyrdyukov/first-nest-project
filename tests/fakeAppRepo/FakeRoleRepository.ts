@@ -1,4 +1,4 @@
-import RoleEntity from '../../../db/entities/Role';
+import RoleEntity from '../../src/db/entities/Role';
 
 export class RoleRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -19,19 +19,4 @@ export class RoleRepositoryFake {
       name: 'admin',
     };
   }
-
-  // public createQueryBuilder = jest.fn(() => ({
-  //   addSelect: jest.fn().mockReturnThis(),
-  //   where: jest.fn().mockReturnThis(),
-  //   leftJoinAndSelect: jest.fn().mockReturnThis(),
-  //   getOne: jest.fn().mockReturnValue({
-  //     userId: 2,
-  //     email: 'tesst',
-  //     address: {
-  //       city: 'Moscow',
-  //       country: 'Russia',
-  //       street: 'Petrovskaya',
-  //     },
-  //   }),
-  // }));
 }
