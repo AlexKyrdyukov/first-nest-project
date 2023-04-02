@@ -1,3 +1,5 @@
+import RedisService from '../../../redis/service';
+import { EventBus, EventPublisher, CommandBus } from '@nestjs/cqrs';
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -11,15 +13,28 @@ import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddress
 import TokenService from '../../../token/service';
 import { HttpException } from '@nestjs/common';
 import { RoleRepositoryFake } from '../../../../tests/fakeAppRepo/FakeRoleRepository';
+import { FakeRedisService } from '../../../../tests/fakeAppRepo/fakeRedisServis';
+import { deviceId } from '../../../../tests/fakeAppData/userData/userData';
+import { returnedUser } from '../../../../tests/fakeAppData/userData/signUpData';
+import { signUpUserData } from '../../../../tests/fakeAppData/userData/signUpData';
+import { DataSource, Repository } from 'typeorm';
 
-describe('check sign up handler', () => {
+describe('test sign up handler', () => {
   let signUpHandler: SignUpUserHandler;
+  let tokenService: TokenService;
+  let userRepository: UserRepositoryFake;
 
   beforeEach(async () => {
+    jest.resetModules();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SignUpUserHandler,
         CryptoService,
+        TokenService,
+        EventPublisher,
+        EventBus,
+        CommandBus,
+        // UserRepositoryFake,
         {
           provide: getRepositoryToken(UserEntity),
           useClass: UserRepositoryFake,
@@ -33,67 +48,42 @@ describe('check sign up handler', () => {
           useClass: RoleRepositoryFake,
         },
         {
-          provide: TokenService,
-          useValue: {
-            createTokens: jest.fn().mockReturnValue({
-              accessToken: 'test',
-              refreshToken: 'test1',
-            }),
-          },
+          provide: RedisService,
+          useClass: FakeRedisService,
         },
       ],
-    })
-      .useMocker(createMock)
-      .compile();
+    }).compile();
 
     signUpHandler = module.get(SignUpUserHandler);
-  });
-  const deviceId = '12234';
-
-  const SignUpUserCommand = {
-    signUpDto: {
-      email: 'user@mail.com',
-      password: '123',
-      roles: ['admin'],
-      address: {
-        city: 'Moscow',
-        country: 'Russia',
-        street: 'Petrovskaya',
-      },
-    },
-    deviceId,
-  };
-
-  it('check class sign up command if user exist', async () => {
-    const res = await signUpHandler.execute(SignUpUserCommand);
-    const res1 = await signUpHandler.execute({
-      signUpDto: { address: {} },
-    } as typeof SignUpUserCommand);
-    const a = res1.createRoles();
-    console.log(a);
-    expect(res).toStrictEqual({
-      user: {
-        email: 'user@mail.ru',
-        userId: 1,
-      },
-      address: {
-        addresId: 1,
-        city: 'Moscow',
-        country: 'Russia',
-        street: 'Petrovskaya',
-      },
-      accessToken: 'test',
-      refreshToken: 'test1',
-    });
+    tokenService = module.get(TokenService);
+    userRepository = module.get(getRepositoryToken(UserEntity));
   });
 
-  it('check class sign up command if user dont exist', async () => {
+  it('check class sign up command if user already exist', async () => {
     try {
-      await signUpHandler.execute(SignUpUserCommand);
+      await signUpHandler.execute(signUpUserData);
     } catch (error) {
       expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe('User with this email dont exist'),
-        expect(error).toThrow();
+      expect(error.message).toBe('user with this email already exist');
     }
   });
+
+  it('check class sign up command if all succesfully', async () => {
+    console.log(userRepository.findOne);
+    jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+
+    const res = await signUpHandler.execute(signUpUserData);
+    console.log(res);
+    expect(res).toBe({});
+  });
+  // it('check class sign up command if user dont exist', async () => {
+  //   try {
+  //     await signUpHandler.execute(SignUpUserCommand);
+  //   } catch (error) {
+  //     console.log(error);
+  //     expect(error).toBeInstanceOf(HttpException);
+  //     expect(error.message).toBe('User with this email dont exist'),
+  //       expect(error).toThrow();
+  //   }
+  // });
 });

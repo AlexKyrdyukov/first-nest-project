@@ -1,40 +1,47 @@
 import UserEntity from '../../src/db/entities/User';
-
+import { returnedUser } from '../../tests/fakeAppData/userData/signUpData';
 export class UserRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public create(): Partial<UserEntity> {
+  public create() {
+    const {
+      accessToken,
+      refreshToken,
+      user: { ...userData },
+      address: { ...addressData },
+    } = returnedUser;
     return {
-      userId: 1,
-      email: 'user@mail.ru',
-      password: '123',
+      ...userData,
+      address: addressData,
     };
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async save(): Promise<Partial<UserEntity>> {
-    return {
-      password: '123',
-      email: 'user@mail.com',
-      userId: 1,
-      fullName: 'Ivan Ivanov',
-    };
+  public async save() {
+    // const { accessToken, refreshToken, ...user } = returnedUser;
+    // return user;
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async remove(): Promise<void> {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async findOne(): Promise<void> {}
+  public async findOne() {
+    if (false) {
+      return null;
+    }
+    const {
+      accessToken,
+      refreshToken,
+      user: { ...userData },
+      address,
+    } = returnedUser;
+    return {
+      ...userData,
+      address,
+    };
+  }
 
   public createQueryBuilder = jest.fn(() => ({
     addSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     leftJoinAndSelect: jest.fn().mockReturnThis(),
-    getOne: jest.fn().mockReturnValue({
-      userId: 2,
-      email: 'tesst',
-      address: {
-        city: 'Moscow',
-        country: 'Russia',
-        street: 'Petrovskaya',
-      },
-    }),
+    getOne: jest.fn().mockReturnValue(returnedUser),
   }));
 }

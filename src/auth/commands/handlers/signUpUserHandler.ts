@@ -22,13 +22,26 @@ export class SignUpUserHandler implements ICommandHandler<SignUpUserCommand> {
     private rolesRepository: Repository<RolesEntity>,
     private crypto: CryptoService,
     private tokenService: TokenService,
-    private readonly publisher: EventPublisher,
+    private publisher: EventPublisher,
   ) {}
 
   async execute(command: SignUpUserCommand): Promise<any> {
     const { signUpDto, deviceId } = command;
     const { address, ...user } = signUpDto;
 
+    const exestingUser = await this.userRepository.findOne({
+      where: {
+        email: user.email,
+      },
+    });
+
+    if (exestingUser) {
+      console.log(exestingUser);
+      throw new HttpException(
+        'user with this email already exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const getRoles = async () => {
       const promises = user.roles.map(createRoles);
       const roles = await Promise.all(promises);
@@ -51,50 +64,42 @@ export class SignUpUserHandler implements ICommandHandler<SignUpUserCommand> {
       return existenRole;
     };
 
-    const exestingUser = await this.userRepository.findOne({
-      where: {
-        email: user.email,
-      },
-    });
-
-    if (exestingUser) {
-      throw new HttpException(
-        'user with this email already exist',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
     const createdRoles = await getRoles();
     const hashPassword = await this.crypto.hashString(
       user.password,
       config.hash.salt,
     );
-    const newUser = this.userRepository.create({
+    const createdUser = this.userRepository.create({
       ...user,
       roles: createdRoles,
       password: String(hashPassword),
     });
-
-    await this.userRepository.save(newUser);
+    await this.userRepository.save(createdUser);
 
     const newAddress = this.addressRepository.create({
       ...address,
-      user: newUser,
+      user: createdUser,
     });
+
     await this.addressRepository.save(newAddress);
+
     const { accessToken, refreshToken } = await this.tokenService.createTokens(
-      newUser.userId,
+      createdUser.userId,
       deviceId,
     );
+
     const {
       user: { password, ...returnedUser },
       ...returnedAddress
     } = newAddress;
 
     const agreGateUser = this.publisher.mergeObjectContext(
-      new User(newUser.userId),
+      new User(createdUser.userId),
     );
+
     agreGateUser.signUp(signUpDto, deviceId);
     agreGateUser.commit();
+
     return {
       user: returnedUser,
       address: returnedAddress,
