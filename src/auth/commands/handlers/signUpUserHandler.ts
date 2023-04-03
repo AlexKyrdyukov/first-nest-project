@@ -1,14 +1,15 @@
 import { Repository } from 'typeorm';
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { SignUpUserCommand } from '../implementations/signUpUserCommand';
-import UserEntity from '../../../db/entities/User';
-import AddressEntity from '../../../db/entities/Address';
-import CryptoService from '../../../crypto/service';
-import config from '../../../config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+
+import { SignUpUserCommand } from '../implementations/signUpUserCommand';
+import config from '../../../config';
+import UserEntity from '../../../db/entities/User';
 import TokenService from '../../../token/service';
 import RolesEntity from '../../../db/entities/Role';
+import CryptoService from '../../../crypto/service';
+import AddressEntity from '../../../db/entities/Address';
 import { User } from '../../../auth/models/userModels';
 
 @CommandHandler(SignUpUserCommand)
@@ -36,7 +37,6 @@ export class SignUpUserHandler implements ICommandHandler<SignUpUserCommand> {
     });
 
     if (exestingUser) {
-      console.log(exestingUser);
       throw new HttpException(
         'user with this email already exist',
         HttpStatus.BAD_REQUEST,
@@ -101,8 +101,10 @@ export class SignUpUserHandler implements ICommandHandler<SignUpUserCommand> {
     agreGateUser.commit();
 
     return {
-      user: returnedUser,
-      address: returnedAddress,
+      user: {
+        ...returnedUser,
+        address: returnedAddress,
+      },
       accessToken,
       refreshToken,
     };

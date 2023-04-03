@@ -26,6 +26,14 @@ describe('check create post handler', () => {
     createPostHandler = module.get(CreatePostHandler);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetModules();
+  });
+
   it('check create post handler', async () => {
     const createPostParams = {
       postDto: {
@@ -47,6 +55,22 @@ describe('check create post handler', () => {
         comments: [],
       },
     });
+  });
+
+  it('check create post handler if create new post category', async () => {
+    const createPostParams = {
+      postDto: {
+        content: 'post content',
+        postId: 1,
+        title: 'post title',
+        category: 'post category',
+        categories: ['footbal'],
+      },
+      userDto: {},
+    };
+    const res = await createPostHandler.execute(createPostParams);
+    expect(res).toBe({});
+    console.log(res);
   });
 
   it('check create post if throw error', async () => {

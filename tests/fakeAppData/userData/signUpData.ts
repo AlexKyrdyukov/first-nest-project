@@ -14,20 +14,8 @@ export const signUpUserData = {
   deviceId,
 };
 
-// export const userFromdb = {
-//   password: 'b7902eed0114afa8bc848c0f9fd8c7cd20f2eb67344e8702ba6adf59d6f45e3d137b851adbcf416fa1a3a2a949ca013ba2f3f9b4a7fc63a1f2aad1045ef732d4',
-//   email: 'user11@mail.ru',
-//   roles: [
-//     Role {
-//       roleId: 1,
-//       createdDate: 2023 - 03 - 27T17: 37: 55.572Z,
-//       name: 'admin'
-//     }
-//   ]
-// }
-
 const fullUserFromdb = {
-  userId: 4,
+  userId: 1,
   password:
     'b7902eed0114afa8bc848c0f9fd8c7cd20f2eb67344e8702ba6adf59d6f45e3d137b851adbcf416fa1a3a2a949ca013ba2f3f9b4a7fc63a1f2aad1045ef732d4',
   createdDate: new Date('2023-04-01T12:18:06.046Z'),
@@ -48,7 +36,7 @@ const fullUserFromdb = {
     city: 'Moscow',
     country: 'Russia',
     deletedDate: null,
-    addresId: 7,
+    addresId: 1,
     createdDate: '2023-04-01T12:18:06.072Z',
     updatedDate: '2023-04-01T12:18:06.072Z',
   },

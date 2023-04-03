@@ -1,10 +1,11 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreatePostCommand } from './../implementations/createPostCommand';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+
 import UserEntity from '../../../db/entities/User';
 import PostEntity from '../../../db/entities/Post';
 import CategoriesEntity from '../../../db/entities/Categories';
-import { Repository } from 'typeorm';
+import { CreatePostCommand } from './../implementations/createPostCommand';
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
@@ -29,6 +30,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
           name: item,
         },
       });
+      console.log(existenCategory);
 
       if (!existenCategory) {
         const category = this.categoryRepository.create({

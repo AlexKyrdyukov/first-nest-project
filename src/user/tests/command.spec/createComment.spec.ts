@@ -9,6 +9,8 @@ import { PostRepositoryFake } from '../../../../tests/fakeAppRepo/fakePostRepoit
 
 describe('check create comment handler', () => {
   let createComment: CreateCommentHandler;
+  let postRepository: PostRepositoryFake;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -24,6 +26,15 @@ describe('check create comment handler', () => {
       ],
     }).compile();
     createComment = module.get(CreateCommentHandler);
+    postRepository = module.get(getRepositoryToken(PostEntity));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetModules();
   });
 
   it('check create comment handler', async () => {
@@ -49,6 +60,30 @@ describe('check create comment handler', () => {
         comments: [],
       },
     });
+  });
+
+  it('check handler if post dont find', async () => {
+    const handlerParams = {
+      createCommentDto: {
+        content: 'text comment',
+        postId: 3,
+      },
+      userDto: {
+        userId: 2,
+        email: 'user@mail.ru',
+        password: '123',
+        fullName: 'name',
+        avatar: 'avatar',
+      },
+    };
+
+    jest.spyOn(postRepository, 'findOne').mockResolvedValue(null);
+    try {
+      await createComment.execute(handlerParams);
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+      expect(error.message).toBe('Unknown error please repeat request');
+    }
   });
 
   it('check create comment handler if func throw error', async () => {

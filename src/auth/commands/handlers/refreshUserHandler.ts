@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+
 import TokenService from '../../../token/service';
 import { RefreshUserCommand } from '../implementations/refreshUserCommand';
 

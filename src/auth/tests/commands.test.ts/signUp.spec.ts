@@ -1,31 +1,30 @@
-import RedisService from '../../../redis/service';
-import { EventBus, EventPublisher, CommandBus } from '@nestjs/cqrs';
-import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { HttpException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import CryptoService from '../../../crypto/service';
+import { EventBus, EventPublisher, CommandBus } from '@nestjs/cqrs';
+
 import { SignUpUserHandler } from '../../../auth/commands/handlers/signUpUserHandler';
+import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
+
 import AddressEntity from '../../../db/entities/Address';
 import RoleEntity from '../../../db/entities/Role';
 import UserEntity from '../../../db/entities/User';
-import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
-import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddressRepository';
+
+import CryptoService from '../../../crypto/service';
 import TokenService from '../../../token/service';
-import { HttpException } from '@nestjs/common';
-import { RoleRepositoryFake } from '../../../../tests/fakeAppRepo/FakeRoleRepository';
+import RedisService from '../../../redis/service';
+
 import { FakeRedisService } from '../../../../tests/fakeAppRepo/fakeRedisServis';
-import { deviceId } from '../../../../tests/fakeAppData/userData/userData';
-import { returnedUser } from '../../../../tests/fakeAppData/userData/signUpData';
 import { signUpUserData } from '../../../../tests/fakeAppData/userData/signUpData';
-import { DataSource, Repository } from 'typeorm';
+import { RoleRepositoryFake } from '../../../../tests/fakeAppRepo/FakeRoleRepository';
+import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddressRepository';
 
 describe('test sign up handler', () => {
   let signUpHandler: SignUpUserHandler;
-  let tokenService: TokenService;
   let userRepository: UserRepositoryFake;
+  let roleRepository: RoleRepositoryFake;
 
   beforeEach(async () => {
-    jest.resetModules();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SignUpUserHandler,
@@ -34,7 +33,6 @@ describe('test sign up handler', () => {
         EventPublisher,
         EventBus,
         CommandBus,
-        // UserRepositoryFake,
         {
           provide: getRepositoryToken(UserEntity),
           useClass: UserRepositoryFake,
@@ -55,8 +53,16 @@ describe('test sign up handler', () => {
     }).compile();
 
     signUpHandler = module.get(SignUpUserHandler);
-    tokenService = module.get(TokenService);
     userRepository = module.get(getRepositoryToken(UserEntity));
+    roleRepository = module.get(getRepositoryToken(RoleEntity));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetModules();
   });
 
   it('check class sign up command if user already exist', async () => {
@@ -69,21 +75,25 @@ describe('test sign up handler', () => {
   });
 
   it('check class sign up command if all succesfully', async () => {
-    console.log(userRepository.findOne);
     jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
-
     const res = await signUpHandler.execute(signUpUserData);
-    console.log(res);
-    expect(res).toBe({});
+    expect(res).toHaveProperty('accessToken');
+    expect(res).toHaveProperty('refreshToken');
+    expect(res).toHaveProperty('user');
+    expect(res.accessToken).toHaveLength(143);
+    expect(res.refreshToken).toHaveLength(143);
   });
-  // it('check class sign up command if user dont exist', async () => {
-  //   try {
-  //     await signUpHandler.execute(SignUpUserCommand);
-  //   } catch (error) {
-  //     console.log(error);
-  //     expect(error).toBeInstanceOf(HttpException);
-  //     expect(error.message).toBe('User with this email dont exist'),
-  //       expect(error).toThrow();
-  //   }
-  // });
+
+  it('check sign up command if create roles', async () => {
+    jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+    jest
+      .spyOn(roleRepository, 'findOne')
+      .mockImplementation(() => Promise.resolve(null));
+    const res = await signUpHandler.execute(signUpUserData);
+    expect(res).toHaveProperty('accessToken');
+    expect(res).toHaveProperty('refreshToken');
+    expect(res).toHaveProperty('user');
+    expect(res.accessToken).toHaveLength(143);
+    expect(res.refreshToken).toHaveLength(143);
+  });
 });

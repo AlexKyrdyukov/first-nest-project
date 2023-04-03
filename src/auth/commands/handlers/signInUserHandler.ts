@@ -1,12 +1,13 @@
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { Repository } from 'typeorm';
-import { SignInUserCommand } from '../implementations/signInUserCommand';
 import { InjectRepository } from '@nestjs/typeorm';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+
+import { SignInUserCommand } from '../implementations/signInUserCommand';
 import CryptoService from '../../../crypto/service';
 import TokenService from '../../../token/service';
 
 import UserEntity from '../../../db/entities/User';
-import { HttpException, HttpStatus } from '@nestjs/common';
 import { User } from '../../../auth/models/userModels';
 
 @CommandHandler(SignInUserCommand)
@@ -22,6 +23,7 @@ export class SignInUserHandler implements ICommandHandler<SignInUserCommand> {
   async execute(command: SignInUserCommand): Promise<any> {
     const { signInDto, deviceId } = command;
     const { email } = signInDto;
+
     const user = await this.userRepository
       .createQueryBuilder('user')
       .addSelect('user.password')

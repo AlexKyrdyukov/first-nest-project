@@ -1,8 +1,8 @@
+import { signUpUserData } from './../../../tests/fakeAppData/userData/signUpData';
 import { SignInUserHandler } from './../commands/handlers/signInUserHandler';
 import { SignInUserCommand } from './../commands/implementations/signInUserCommand';
 import { CommandBus, QueryBus, EventPublisher, EventBus } from '@nestjs/cqrs';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { createMock } from '@golevelup/ts-jest';
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import AuthController from '../controllers';
@@ -23,7 +23,7 @@ describe('check user repository', () => {
         TokenService,
         {
           provide: CommandBus,
-          useValue: { execute: () => { } },
+          useValue: { execute: () => {} },
         },
         {
           provide: RedisService,
@@ -56,9 +56,12 @@ describe('check user repository', () => {
   });
 
   it('check sign up controller', async () => {
-    const res = await request(app.getHttpServer()).post('/auth/sign-up').send({
-      usr: 'dddddd',
-    });
+    const { signUpDto, deviceId } = signUpUserData;
+    const res = await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send({
+        ...signUpDto,
+      });
     // .expect(201)
     // .expect({});
     console.log('11111111111', res.error);

@@ -1,78 +1,92 @@
 import { HttpException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { SignInUserHandler } from '../../commands/handlers/signInUserHandler';
-import { createMock } from '@golevelup/ts-jest';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import UserEntity from '../../../db/entities/User';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EventPublisher, EventBus, CommandBus } from '@nestjs/cqrs';
+
 import TokenService from '../../../token/service';
+import CryptoService from '../../../crypto/service';
+import RedisService from '../../../redis/service';
+
+import UserEntity from '../../../db/entities/User';
+import { SignInUserHandler } from '../../commands/handlers/signInUserHandler';
 import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
+import { FakeRedisService } from './../../../../tests/fakeAppRepo/fakeRedisServis';
+import { signInUserData } from '../../../../tests/fakeAppData/userData/signInData';
 
 describe('check auth commands', () => {
   let signInHandler: SignInUserHandler;
-  let tokenService: TokenService;
+  let cryptoService: CryptoService;
+  let userRepository: UserRepositoryFake;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SignInUserHandler,
+        TokenService,
+        CryptoService,
+        EventPublisher,
+        EventBus,
+        CommandBus,
+        {
+          provide: RedisService,
+          useClass: FakeRedisService,
+        },
         {
           provide: getRepositoryToken(UserEntity),
           useClass: UserRepositoryFake,
         },
-        {
-          provide: TokenService,
-          useValue: {
-            createTokens: jest.fn().mockReturnValue({
-              accessToken: 'test',
-              refreshToken: 'test1',
-            }),
-          },
-        },
       ],
-    })
-      .useMocker(createMock)
-      .compile();
+    }).compile();
 
     signInHandler = module.get(SignInUserHandler);
-    tokenService = module.get<TokenService>(TokenService);
+    cryptoService = module.get(CryptoService);
+    userRepository = module.get(getRepositoryToken(UserEntity));
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const signInDto = { email: 'user@mail.com', password: '123' };
-  const deviceId = '12234';
-  const SignInUserCommand = {
-    signInDto,
-    deviceId,
-  };
+  afterAll(() => {
+    jest.resetModules();
+  });
 
-  it('check class sign in handler', async () => {
-    const res = await signInHandler.execute(SignInUserCommand);
-    expect(tokenService.createTokens).toHaveBeenCalled();
-    expect(res).toMatchObject({
-      accessToken: 'test',
-      refreshToken: 'test1',
-      user: {
-        userId: 2,
-        email: 'tesst',
-        address: {
-          city: 'Moscow',
-          country: 'Russia',
-          street: 'Petrovskaya',
-        },
-      },
-    });
+  it('check class sign in if password invalid', async () => {
+    try {
+      await signInHandler.execute(signInUserData);
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+      expect(error.message).toBe('Entered password invalid');
+    }
+  });
+
+  it('check func if password valid', async () => {
+    jest
+      .spyOn(cryptoService, 'checkValid')
+      .mockResolvedValue(null as unknown as void);
+    const res = await signInHandler.execute(signInUserData);
+    expect(res).toHaveProperty('accessToken');
+    expect(res).toHaveProperty('refreshToken');
+    expect(res).toHaveProperty('user');
   });
 
   it('check class sign in if user not found', async () => {
+    jest.spyOn(userRepository, 'createQueryBuilder').mockImplementation(() => ({
+      addSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      leftJoinAndSelect: jest.fn().mockReturnThis(),
+      getOne: jest.fn().mockReturnValue(null),
+    }));
+
+    jest
+      .spyOn(cryptoService, 'checkValid')
+      .mockResolvedValue(null as unknown as void);
+
     try {
-      await signInHandler.execute(SignInUserCommand);
+      await signInHandler.execute(signInUserData);
     } catch (error) {
       expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe('User with this email dont exist'),
-        expect(error).toThrow();
+      expect(error.message).toBe('User with this email dont exist');
     }
   });
 });

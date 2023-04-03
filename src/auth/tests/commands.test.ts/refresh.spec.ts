@@ -1,52 +1,62 @@
 import { HttpException } from '@nestjs/common';
-import { RefreshUserHandler } from './../../commands/handlers/refreshUserHandler';
 import { Test, TestingModule } from '@nestjs/testing';
+
+import RedisService from '../../../redis/service';
 import TokenService from '../../../token/service';
+
+import { deviceId } from './../../../../tests/fakeAppData/userData/userData';
+import { FakeRedisService } from '../../../../tests/fakeAppRepo/fakeRedisServis';
+import { RefreshUserHandler } from './../../commands/handlers/refreshUserHandler';
 
 describe('check refresh command handler', () => {
   let refreshHandler: RefreshUserHandler;
+  let tokenService: TokenService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RefreshUserHandler,
+        TokenService,
         {
-          provide: TokenService,
-          useValue: {
-            verifyRefresh: () => 1,
-            createTokens: () => {
-              return {
-                accessToken: 'test',
-                refreshToken: 'test1',
-              };
-            },
-          },
+          provide: RedisService,
+          useClass: FakeRedisService,
         },
       ],
     }).compile();
+
     refreshHandler = module.get(RefreshUserHandler);
+    tokenService = module.get(TokenService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetModules();
   });
 
   const refreshParams = {
     refreshUserDto: {
-      refreshToken: 'Bearer 1234455',
+      refreshToken: 'Bearer token',
     },
     deviceId: '1234',
   };
 
   it('check refresh handler', async () => {
+    jest
+      .spyOn(tokenService, 'verifyRefresh')
+      .mockImplementation(() => Promise.resolve({ userId: 1 as never }));
     const res = await refreshHandler.execute(refreshParams);
-    expect(res).toStrictEqual({
-      accessToken: 'test',
-      refreshToken: 'test1',
-    });
+    expect(res).toHaveProperty('accessToken');
+    expect(res).toHaveProperty('refreshToken');
   });
 
   it('check refresh handler if unknown type auth', async () => {
     const refreshParams = {
       refreshUserDto: {
-        refreshToken: '1234455',
+        refreshToken: 'token',
       },
-      deviceId: '1234',
+      deviceId,
     };
     try {
       await refreshHandler.execute(refreshParams);

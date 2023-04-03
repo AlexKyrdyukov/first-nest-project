@@ -1,9 +1,11 @@
-import { CreateCommentCommand } from '../implementations/createCommentCommand';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import PostEntity from '../../../db/entities/Post';
-import CommentEntity from '../../../db/entities/Comment';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+
+import PostEntity from '../../../db/entities/Post';
+import CommentEntity from '../../../db/entities/Comment';
+import { CreateCommentCommand } from '../implementations/createCommentCommand';
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentHandler
@@ -27,8 +29,12 @@ export class CreateCommentHandler
         comments: true,
       },
     });
+
     if (!post) {
-      return;
+      throw new HttpException(
+        'Unknown error please repeat request',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const newComment = this.commentRepository.create({
