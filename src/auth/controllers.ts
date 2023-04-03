@@ -21,15 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import {
-  AuthGuard,
-  LoggingInterceptor,
-  WrapDataInterceptor,
-  ExcludeNullInterceptor,
-  ErrorsInterceptor,
-  CacheInterceptor,
-  TimeoutInterceptor,
-} from './authGuard';
+import { AuthGuard } from './authGuard';
 import UserEntity from '../db/entities/User';
 import { User } from '../user/user.decorator';
 import { Roles } from '../roles/rolesDecorator';
@@ -43,12 +35,6 @@ import { RefreshResponse, RefreshTokenDto } from './dto/refreshDto';
 // import { Request } from 'express';
 
 @ApiTags('auth api')
-// @UseInterceptors(WrapDataInterceptor)
-// @UseInterceptors(LoggingInterceptor)
-// @UseInterceptors(ExcludeNullInterceptor)
-// @UseInterceptors(ErrorsInterceptor)
-// @UseInterceptors(TimeoutInterceptor)
-// @UseInterceptors(CacheInterceptor)
 @ApiHeader({ name: 'deviceId' })
 @Controller('auth')
 class AuthController {

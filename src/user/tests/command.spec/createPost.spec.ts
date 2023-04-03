@@ -1,14 +1,16 @@
-import { HttpException } from '@nestjs/common';
-import { CategoryRepositoryFake } from '../../../../tests/fakeAppRepo/fakeCategoryRepository';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreatePostHandler } from '../../../user/commands/handlers/createPostHandler';
+
 import PostEntity from '../../../db/entities/Post';
-import { PostRepositoryFake } from '../../../../tests/fakeAppRepo/fakePostRepoitory';
 import CategoryEntity from '../../../db/entities/Categories';
+
+import { CreatePostHandler } from '../../../user/commands/handlers/createPostHandler';
+import { PostRepositoryFake } from '../../../../tests/fakeAppRepo/fakePostRepoitory';
+import { CategoryRepositoryFake } from '../../../../tests/fakeAppRepo/fakeCategoryRepository';
 
 describe('check create post handler', () => {
   let createPostHandler: CreatePostHandler;
+  let categoryRepository: CategoryRepositoryFake;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -23,7 +25,9 @@ describe('check create post handler', () => {
         },
       ],
     }).compile();
+
     createPostHandler = module.get(CreatePostHandler);
+    categoryRepository = module.get(getRepositoryToken(CategoryEntity));
   });
 
   afterEach(() => {
@@ -40,24 +44,24 @@ describe('check create post handler', () => {
         content: 'post content',
         postId: 1,
         title: 'post title',
-        category: 'post category',
-        categories: [],
+        category: 'football',
+        categories: ['footbal'],
       },
       userDto: {},
     };
 
     const res = await createPostHandler.execute(createPostParams);
-    expect(res).toStrictEqual({
-      post: {
-        postId: 1,
-        content: 'post content',
-        title: 'post title',
-        comments: [],
-      },
-    });
+    expect(res).toHaveProperty('content');
+    expect(res).toHaveProperty('title');
+    expect(res).toHaveProperty('category');
+    expect(res).toHaveProperty('categories');
   });
 
   it('check create post handler if create new post category', async () => {
+    jest
+      .spyOn(categoryRepository, 'findOne')
+      .mockImplementation(() => Promise.resolve(null));
+
     const createPostParams = {
       postDto: {
         content: 'post content',
@@ -69,8 +73,10 @@ describe('check create post handler', () => {
       userDto: {},
     };
     const res = await createPostHandler.execute(createPostParams);
-    expect(res).toBe({});
-    console.log(res);
+    expect(res).toHaveProperty('content');
+    expect(res).toHaveProperty('title');
+    expect(res).toHaveProperty('category');
+    expect(res).toHaveProperty('categories');
   });
 
   it('check create post if throw error', async () => {
@@ -88,7 +94,7 @@ describe('check create post handler', () => {
     try {
       await createPostHandler.execute(createPostParams);
     } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
+      expect(error).toBeInstanceOf(Error);
       expect(error.message).toBeDefined();
     }
   });

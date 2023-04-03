@@ -1,9 +1,11 @@
-import { PatchDataCommand } from '../implementations/patchDataCommand';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+
 import UserEntity from '../../../db/entities/User';
 import AddressEntity from '../../../db/entities/Address';
-import { Repository } from 'typeorm';
+
+import { PatchDataCommand } from '../implementations/patchDataCommand';
 
 @CommandHandler(PatchDataCommand)
 export class PatchDataHandler implements ICommandHandler<PatchDataCommand> {

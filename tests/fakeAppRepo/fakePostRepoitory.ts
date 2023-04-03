@@ -8,7 +8,8 @@ export class PostRepositoryFake {
       content: 'post content',
       title: 'post title',
       comments: [],
-      category: [{ categoryId: 1, name: 'footbal' }],
+      category: 'football',
+      categories: [{ categoryId: 1, name: 'footbal' }],
     };
   }
 

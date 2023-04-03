@@ -1,10 +1,11 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { RemoveUserCommand } from '../implementations/removeUserCommand';
 import UserEntity from '../../../db/entities/User';
 import AddresEntity from '../../../db/entities/Address';
+
+import { RemoveUserCommand } from '../implementations/removeUserCommand';
 
 @CommandHandler(RemoveUserCommand)
 export class RemoveUserHandler implements ICommandHandler<RemoveUserCommand> {

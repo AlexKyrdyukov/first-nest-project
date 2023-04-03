@@ -1,10 +1,12 @@
 import { HttpException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
+
+import PostEntity from '../../../db/entities/Post';
+import CommentEntity from '../../../db/entities/Comment';
+
 import { CreateCommentHandler } from '../../../user/commands/handlers/createCommentHandler';
 import { CommentRepositoryFake } from '../../../../tests/fakeAppRepo/fakeCommentRepositories';
-import CommentEntity from '../../../db/entities/Comment';
-import PostEntity from '../../../db/entities/Post';
 import { PostRepositoryFake } from '../../../../tests/fakeAppRepo/fakePostRepoitory';
 
 describe('check create comment handler', () => {

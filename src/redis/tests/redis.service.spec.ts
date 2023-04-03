@@ -1,24 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import RedisService from '../service';
+import { FakeRedisService } from 'tests/fakeAppRepo/fakeRedisServis';
 
-class RedisRepositoryFake {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async set(): Promise<void> {}
-  public async get(): Promise<{ [key: string]: string } | string | null> {
-    // return { test: 'test' };
-    return '{ "test": "test"}';
-  }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async del(): Promise<void> {}
+// class RedisRepositoryFake {
+//   // eslint-disable-next-line @typescript-eslint/no-empty-function
+//   public async set(): Promise<void> {}
+//   public async get(): Promise<{ [key: string]: string } | string | null> {
+//     // return { test: 'test' };
+//     return '{ "test": "test"}';
+//   }
+//   // eslint-disable-next-line @typescript-eslint/no-empty-function
+//   public async del(): Promise<void> {}
 
-  public createKey(): string {
-    return 'test:key';
-  }
+//   public createKey(): string {
+//     return 'test:key';
+//   }
 
-  public confirmationStringType(value: unknown): value is string {
-    return (value as string)?.length !== undefined;
-  }
-}
+//   public confirmationStringType(value: unknown): value is string {
+//     return (value as string)?.length !== undefined;
+//   }
+// }
 
 describe('redis service test', () => {
   let service: RedisService;
@@ -29,7 +30,7 @@ describe('redis service test', () => {
         RedisService,
         {
           provide: 'REDIS_CLIENT',
-          useClass: RedisRepositoryFake,
+          useClass: FakeRedisService,
         },
       ],
     }).compile();
@@ -59,15 +60,5 @@ describe('redis service test', () => {
   it('test function remove', async () => {
     const res = await service.remove('test', 'test');
     expect(res).not.toBeDefined();
-  });
-
-  it('test function confirm type if string', () => {
-    const res = service.confirmationStringType('test');
-    expect(res).toBeTruthy();
-  });
-
-  it('test function confirm type if string', () => {
-    const res = service.confirmationStringType(22);
-    expect(res).toBeFalsy();
   });
 });

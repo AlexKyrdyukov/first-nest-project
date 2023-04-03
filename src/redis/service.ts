@@ -11,10 +11,6 @@ class RedisService {
     private readonly redisClient: RedisClientType,
   ) {}
 
-  confirmationStringType(value: unknown): value is string {
-    return (value as string)?.length !== undefined;
-  }
-
   createKey(rootKey: string, nestedKey: string) {
     return `${rootKey}:${nestedKey}`;
   }

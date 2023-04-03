@@ -1,10 +1,12 @@
-import { PatchPasswordCommand } from '../implementations/patchPasswordCommand';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import CryptoService from '../../../crypto/service';
-import { InjectRepository } from '@nestjs/typeorm';
-import UserEntity from '../../../db/entities/User';
-import config from '../../../config';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+
+import config from '../../../config';
+import UserEntity from '../../../db/entities/User';
+import CryptoService from '../../../crypto/service';
+
+import { PatchPasswordCommand } from '../implementations/patchPasswordCommand';
 
 @CommandHandler(PatchPasswordCommand)
 export class PatchPasswordHandler

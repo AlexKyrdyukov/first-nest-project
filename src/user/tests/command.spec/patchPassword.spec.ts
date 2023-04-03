@@ -1,10 +1,12 @@
 import { HttpException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { PatchPasswordHandler } from './../../commands/handlers/patchPasswordHandler';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import UserEntity from '../../../db/entities/User';
-import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
 import CryptoService from '../../../crypto/service';
+
+import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
+import { PatchPasswordHandler } from './../../commands/handlers/patchPasswordHandler';
 
 describe('test patch password handler', () => {
   let patchPasswordHandler: PatchPasswordHandler;

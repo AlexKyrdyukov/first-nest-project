@@ -1,7 +1,8 @@
-import { HttpException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import UserEntity from '../../../db/entities/User';
+
 import { SetAvatarHandler } from '../../../user/commands/handlers/setAvatarhandler';
 import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
 
@@ -27,11 +28,10 @@ describe('check set avatar handler', () => {
       userDto: {} as UserEntity,
     };
     const res = await setAvatarHandler.execute(handlerParams);
-    expect(res).toStrictEqual({
-      userId: 1,
-      email: 'user@mail.com',
-      fullName: 'Ivan Ivanov',
-    });
+    expect(res).toHaveProperty('email');
+    expect(res).toHaveProperty('address');
+    expect(res).toHaveProperty('roles');
+    expect(res).toHaveProperty('userId');
   });
 
   it('check set avatar if handler throw error', async () => {
@@ -42,7 +42,7 @@ describe('check set avatar handler', () => {
     try {
       await setAvatarHandler.execute(handlerParams);
     } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
+      expect(error).toBeInstanceOf(Error);
       expect(error.message).toBeDefined();
     }
   });

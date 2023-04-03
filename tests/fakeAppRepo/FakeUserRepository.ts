@@ -15,8 +15,16 @@ export class UserRepositoryFake {
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async save() {
-    // const { accessToken, refreshToken, ...user } = returnedUser;
-    // return user;
+    const {
+      accessToken,
+      refreshToken,
+      user: { ...userData },
+      address: { ...addressData },
+    } = returnedUser;
+    return {
+      ...userData,
+      address: addressData,
+    };
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async remove(): Promise<void> {}

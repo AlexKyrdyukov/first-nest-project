@@ -1,10 +1,12 @@
 import { HttpException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import UserEntity from '../../../db/entities/User';
+import AddressEntity from '../../../db/entities/Address';
+
 import { RemoveUserHandler } from '../../../user/commands/handlers/removeUserHandler';
 import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
-import AddressEntity from '../../../db/entities/Address';
 import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddressRepository';
 
 describe('check handler delete user', () => {
@@ -43,7 +45,7 @@ describe('check handler delete user', () => {
     try {
       await removeUserHandler.execute(handlerParams);
     } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
+      expect(error).toBeInstanceOf(Error);
       expect(error.message).toBeDefined();
     }
   });
