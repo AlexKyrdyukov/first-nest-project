@@ -22,6 +22,7 @@ class RedisRepositoryFake {
 
 describe('redis service test', () => {
   let service: RedisService;
+  let redisClient: RedisRepositoryFake;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,19 +35,35 @@ describe('redis service test', () => {
       ],
     }).compile();
     service = module.get<RedisService>(RedisService);
+    redisClient = module.get('REDIS_CLIENT');
   });
 
-  it('set value with expected value', async () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetModules();
+  });
+
+  it('should set value return undefined', async () => {
     const res = await service.set('test', '1234', 'token', '10m');
     expect(res).not.toBeDefined();
   });
 
-  it('set value', async () => {
-    const res = await service.set('test', '1234', 'token', '10m');
+  it('should set value without four parametr', async () => {
+    const res = await service.set('test', '1234', 'token');
     expect(res).not.toBeDefined();
   });
 
-  it('get value', async () => {
+  it('should get value is null', async () => {
+    jest.spyOn(redisClient, 'get').mockResolvedValue(null);
+    const res = await service.get('test', '1234');
+    console.log(res);
+    expect(res).toBe(null);
+  });
+
+  it('should get valid value', async () => {
     const res = await service.get('test', 'test');
     expect(res).toStrictEqual({ test: 'test' });
   });

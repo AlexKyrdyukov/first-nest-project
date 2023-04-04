@@ -1,7 +1,5 @@
 import { signUpUserData } from './../../../tests/fakeAppData/userData/signUpData';
-import { SignInUserHandler } from './../commands/handlers/signInUserHandler';
-import { SignInUserCommand } from './../commands/implementations/signInUserCommand';
-import { CommandBus, QueryBus, EventPublisher, EventBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,8 +9,6 @@ import TokenService from '../../token/service';
 import RedisService from '../../redis/service';
 import UserEntity from '../../db/entities/User';
 import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
-import RedisClient from '@redis/client/dist/lib/client';
-import CryptoService from '../../crypto/service';
 
 describe('check user repository', () => {
   let app: INestApplication;
@@ -23,7 +19,7 @@ describe('check user repository', () => {
         TokenService,
         {
           provide: CommandBus,
-          useValue: { execute: () => {} },
+          useValue: { execute: () => true },
         },
         {
           provide: RedisService,
@@ -42,7 +38,7 @@ describe('check user repository', () => {
     await app.init();
   });
 
-  it('check sign in controller', async () => {
+  it('should pass validation entered data, ', async () => {
     const res = await request(app.getHttpServer())
       .post('/auth/sign-in')
       .send({
@@ -53,9 +49,18 @@ describe('check user repository', () => {
         password: '123',
       })
       .expect(200);
+    console.log(res);
   });
 
-  it('check sign up controller', async () => {
+  it('should throw error validation', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send({})
+      .expect(400);
+    console.log(res.error);
+  })
+
+  it('should pass validation entered data', async () => {
     const { signUpDto, deviceId } = signUpUserData;
     const res = await request(app.getHttpServer())
       .post('/auth/sign-up')
@@ -64,6 +69,6 @@ describe('check user repository', () => {
       });
     // .expect(201)
     // .expect({});
-    console.log('11111111111', res.error);
+    console.log('11111111111', res);
   });
 });

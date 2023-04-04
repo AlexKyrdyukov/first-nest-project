@@ -30,7 +30,7 @@ class RedisService {
     rootKey: string,
     nestedKey: string,
     value: string,
-    expiresIn: string,
+    expiresIn?: string,
   ) => {
     const key = this.createKey(rootKey, nestedKey);
     const strinfigyedValue = JSON.stringify(value);
