@@ -22,6 +22,14 @@ describe('check set avatar handler', () => {
     setAvatarHandler = module.get(SetAvatarHandler);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetModules();
+  });
+
   it('check set avatar handler succesfull', async () => {
     const handlerParams = {
       avatarLink: 'link on avatar',

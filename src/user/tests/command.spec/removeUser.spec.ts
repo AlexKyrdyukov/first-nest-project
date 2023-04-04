@@ -28,6 +28,14 @@ describe('check handler delete user', () => {
     removeUserHandler = module.get(RemoveUserHandler);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetModules();
+  });
+
   it('check handler delete user', async () => {
     const handlerParams = {
       userDto: {} as UserEntity,

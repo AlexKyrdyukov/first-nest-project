@@ -39,10 +39,9 @@ export class AuthGuard implements CanActivate {
     const { headers, params } = request;
     const id = params.userId;
     const { authorization } = headers;
-
     if (!authorization) {
       throw new HttpException(
-        'please authorization in application',
+        'Please authorization in application',
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -55,7 +54,7 @@ export class AuthGuard implements CanActivate {
     }
     const { userId } = await this.tokenService.verifyToken(token);
 
-    if (id && Number(id) !== userId) {
+    if (id && Number(id) !== Number(userId)) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
 

@@ -21,9 +21,6 @@ class RedisService {
 
     const data = await this.redisClient.get(key);
 
-    // const parsedData = this.confirmationStringType(data)
-    // // ? JSON.parse(data)
-    // : null;
     const parsedData = data ? JSON.parse(data) : null;
 
     return parsedData;

@@ -11,6 +11,9 @@ export class FakeRedisService {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async remove(): Promise<void> {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public async del(): Promise<void> {}
+
   public createKey(key: string, nestedKey: string): string {
     return `${key}:${nestedKey}`;
   }

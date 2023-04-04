@@ -28,6 +28,14 @@ describe('check handler update user data', () => {
     patchDataHandler = module.get(PatchDataHandler);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetModules();
+  });
+
   it('check update user data', async () => {
     const patchHandlerParams = {
       patchUserDto: {

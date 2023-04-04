@@ -24,6 +24,14 @@ describe('test patch password handler', () => {
     patchPasswordHandler = module.get(PatchPasswordHandler);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.resetModules();
+  });
+
   it('check password handler when password valid', async () => {
     const handlerParams = {
       patchPasswordDto: {
