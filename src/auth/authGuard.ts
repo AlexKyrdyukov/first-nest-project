@@ -10,16 +10,6 @@ import {
   RequestTimeoutException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  catchError,
-  map,
-  Observable,
-  of,
-  tap,
-  throwError,
-  timeout,
-  TimeoutError,
-} from 'rxjs';
 
 import { Repository } from 'typeorm';
 
@@ -37,7 +27,8 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const { headers, params } = request;
-    const id = params.userId;
+    // const id = params.userId;
+
     const { authorization } = headers;
     if (!authorization) {
       throw new HttpException(
@@ -53,10 +44,10 @@ export class AuthGuard implements CanActivate {
       );
     }
     const { userId } = await this.tokenService.verifyToken(token);
-
-    if (id && Number(id) !== Number(userId)) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
+    // console.log(id, userId);
+    // if (id || Number(id) !== Number(userId)) {
+    //   throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    // }
 
     const user = await this.userRepository
       .createQueryBuilder('user')

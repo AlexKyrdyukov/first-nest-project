@@ -59,7 +59,6 @@ describe('redis service test', () => {
   it('should get value is null', async () => {
     jest.spyOn(redisClient, 'get').mockResolvedValue(null);
     const res = await service.get('test', '1234');
-    console.log(res);
     expect(res).toBe(null);
   });
 

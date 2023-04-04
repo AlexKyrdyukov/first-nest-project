@@ -45,10 +45,7 @@ import { CreateCommentCommand } from './commands/implementations/createCommentCo
 @ApiHeader({ name: 'deviceId' })
 @UseGuards(AuthGuard)
 class UserController {
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @ApiOperation({ summary: 'delete user' })
   @ApiParam({

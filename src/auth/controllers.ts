@@ -30,7 +30,6 @@ import { SignUpUserCommand } from './commands/implementations/signUpUserCommand'
 import { SignInResponse, SignInUserDto } from './dto/signInUserDto';
 import { SignInUserCommand } from './commands/implementations/signInUserCommand';
 import { RefreshResponse, RefreshTokenDto } from './dto/refreshDto';
-// import { Request } from 'express';
 
 @ApiTags('auth api')
 @ApiHeader({ name: 'deviceId' })
