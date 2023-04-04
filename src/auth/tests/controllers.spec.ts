@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import AuthController from '../controllers';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, INestApplication, ValidationPipe } from '@nestjs/common';
 import TokenService from '../../token/service';
 import RedisService from '../../redis/service';
 import UserEntity from '../../db/entities/User';
@@ -49,16 +49,22 @@ describe('check user repository', () => {
         password: '123',
       })
       .expect(200);
-    console.log(res);
+    console.log(res.error);
   });
 
   it('should throw error validation', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/auth/sign-in')
-      .send({})
-      .expect(400);
-    console.log(res.error);
-  })
+    try {
+      const res = await request(app.getHttpServer())
+        .post('/auth/sign-in')
+        .send({})
+        .expect(400);
+      console.log(6111, res.error);
+    } catch (error) {
+      console.log(6111, error);
+      expect(error).toBeInstanceOf(BadRequestException);
+      expect(error.message).toBeDefined();
+    }
+  });
 
   it('should pass validation entered data', async () => {
     const { signUpDto, deviceId } = signUpUserData;
@@ -69,6 +75,6 @@ describe('check user repository', () => {
       });
     // .expect(201)
     // .expect({});
-    console.log('11111111111', res);
+    console.log('11111111111', res.error);
   });
 });
