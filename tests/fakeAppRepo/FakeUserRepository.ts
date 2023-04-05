@@ -1,4 +1,7 @@
-import { returnedUser } from '../../tests/fakeAppData/userData/signUpData';
+import {
+  returnedUser,
+  fullUserFromdb,
+} from '../../tests/fakeAppData/userData/signUpData';
 export class UserRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public create() {
@@ -49,6 +52,6 @@ export class UserRepositoryFake {
     addSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     leftJoinAndSelect: jest.fn().mockReturnThis(),
-    getOne: jest.fn().mockReturnValue(returnedUser),
+    getOne: jest.fn().mockReturnValue(fullUserFromdb),
   }));
 }

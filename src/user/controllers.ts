@@ -39,11 +39,14 @@ import { SetAvatarCommand } from './commands/implementations/setAvatarCommand';
 import { CreatePostDto } from './dto/createPostDto';
 import { CreateCommentDto } from './dto/createCommentDto';
 import { CreateCommentCommand } from './commands/implementations/createCommentCommand';
+import { Roles } from '../roles/rolesDecorator';
+import { RolesGuard } from '../roles/rolesGuard';
 
 @ApiTags('user api')
 @Controller('user')
 @ApiHeader({ name: 'deviceId' })
 @UseGuards(AuthGuard)
+@UseGuards(RolesGuard)
 class UserController {
   constructor(private readonly commandBus: CommandBus) {}
 
@@ -54,6 +57,7 @@ class UserController {
   })
   @ApiResponse({ status: 204 })
   @Delete(':userId')
+  @Roles('admin') // add role
   async delete(
     @Param(new ValidationPipe()) param: DeleteUserDto,
     @User() userDto: UserEntity,
@@ -72,8 +76,9 @@ class UserController {
   @ApiResponse({ status: 200 })
   @Patch(':userId/password')
   @HttpCode(204)
+  @Roles('admin, user, intern') // add role
   async patchUserPassword(
-    @Body(new ValidationPipe())
+    @Body(new ValidationPipe({ whitelist: true }))
     body: PatchPasswordDto,
     @User() userDto: UserEntity,
   ) {
@@ -90,8 +95,9 @@ class UserController {
   })
   @ApiResponse({ status: 200, type: UserEntity })
   @Patch(':userId')
+  @Roles('admin, user, intern') // add role
   async patchUserData(
-    @Body(new ValidationPipe({ skipMissingProperties: true }))
+    @Body(new ValidationPipe({ skipMissingProperties: true, whitelist: true }))
     body: PatchDataDto,
     @User() userDto: UserEntity,
   ) {
@@ -106,10 +112,12 @@ class UserController {
     type: UserParamDto,
     name: 'userId',
   })
+  @HttpCode(200)
   @ApiResponse({ status: 200, type: UserEntity })
   @Post(':userId/avatar')
+  @Roles('admin, user, intern') // add role
   async setUserAvatar(
-    @Body(new ValidationPipe()) body: SetAvatarUserDto,
+    @Body(new ValidationPipe({ whitelist: true })) body: SetAvatarUserDto,
     @User() userDto: UserEntity,
   ) {
     return this.commandBus.execute(new SetAvatarCommand(body.avatar, userDto));
@@ -125,8 +133,9 @@ class UserController {
   })
   @ApiResponse({ status: 200, type: PostEntity })
   @Post(':userId/post')
+  @Roles('admin, user, intern') // add role
   async createPost(
-    @Body(new ValidationPipe()) body: CreatePostDto,
+    @Body(new ValidationPipe({ whitelist: true })) body: CreatePostDto,
     @User() userDto: UserEntity,
   ) {
     return this.commandBus.execute(new CreatePostCommand(body, userDto));
@@ -142,8 +151,10 @@ class UserController {
   })
   @ApiResponse({ status: 200, type: PostEntity })
   @Post(':userId/comment')
+  @Roles('admin, user, intern') // add role
   async createComment(
-    @Body(new ValidationPipe()) body: CreateCommentDto,
+    @Body(new ValidationPipe({ whitelist: true }))
+    body: CreateCommentDto,
     @User() userDto: UserEntity,
   ) {
     return this.commandBus.execute(new CreateCommentCommand(body, userDto));

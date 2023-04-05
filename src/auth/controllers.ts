@@ -34,6 +34,7 @@ import { RefreshResponse, RefreshTokenDto } from './dto/refreshDto';
 @ApiTags('auth api')
 @ApiHeader({ name: 'deviceId' })
 @Controller('auth')
+@UseGuards(AuthGuard)
 class AuthController {
   constructor(private readonly commandBus: CommandBus) {}
 
@@ -43,9 +44,10 @@ class AuthController {
   @ApiBody({ type: SignInUserDto })
   @ApiResponse({ status: 200, type: SignInResponse })
   @Post('sign-in')
+  @Roles('user') // add role
   @HttpCode(200)
   async signIn(
-    @Body(new ValidationPipe()) dto: SignInUserDto,
+    @Body(new ValidationPipe({ whitelist: true })) dto: SignInUserDto,
     @Headers() headers: DeviceIdDto,
   ): Promise<SignInResponse> {
     return this.commandBus.execute(
@@ -57,9 +59,9 @@ class AuthController {
   @ApiBody({ type: SignUpUserDto })
   @ApiResponse({ status: 201, type: SignUpResponse })
   @Post('sign-up')
-  @Roles('admin') // add role
+  @Roles('user') // add role
   async signUp(
-    @Body(new ValidationPipe()) dto: SignUpUserDto,
+    @Body(new ValidationPipe({ whitelist: true })) dto: SignUpUserDto,
     @Headers() headers: DeviceIdDto,
   ): Promise<SignUpResponse> {
     return this.commandBus.execute(
@@ -71,6 +73,7 @@ class AuthController {
   @ApiOperation({ summary: 'return user properties' })
   @ApiResponse({ status: 200, type: UserEntity })
   @Get('me')
+  @Roles('user') // add role
   @UseGuards(AuthGuard)
   async getMe(@User() reqUser: UserEntity) {
     const { password, comment, posts, ...user } = reqUser;
@@ -81,6 +84,7 @@ class AuthController {
   @ApiBody({ type: RefreshTokenDto })
   @ApiResponse({ status: 201, type: RefreshResponse })
   @Post('refresh')
+  @Roles('user') // add role
   async refresh(
     @Body(new ValidationPipe()) dto: RefreshTokenDto,
     @Headers() headers: DeviceIdDto,

@@ -14,7 +14,7 @@ export const signUpUserData = {
   deviceId,
 };
 
-const fullUserFromdb = {
+export const fullUserFromdb = {
   userId: 1,
   password:
     'b7902eed0114afa8bc848c0f9fd8c7cd20f2eb67344e8702ba6adf59d6f45e3d137b851adbcf416fa1a3a2a949ca013ba2f3f9b4a7fc63a1f2aad1045ef732d4',
