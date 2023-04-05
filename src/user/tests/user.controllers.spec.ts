@@ -6,11 +6,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
 import UserEntity from '../../db/entities/User';
-import UserController from '../controllers';
+import { UserControllers } from '../controllers';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
 import { CommandBus } from '@nestjs/cqrs';
-import { RolesGuard } from '../../roles/rolesGuard';
 import { Repository } from 'typeorm';
 
 describe('should check work useer controller', () => {
@@ -19,7 +18,7 @@ describe('should check work useer controller', () => {
   let userRepository: Repository<UserEntity>;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UserController],
+      controllers: [UserControllers],
       providers: [
         TokenService,
         {
@@ -35,10 +34,7 @@ describe('should check work useer controller', () => {
           useClass: UserRepositoryFake,
         },
       ],
-    })
-      // .overrideGuard(RolesGuard)
-      // .useValue(true)
-      .compile();
+    }).compile();
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     tokenService = module.get(TokenService);
@@ -210,99 +206,6 @@ describe('should check work useer controller', () => {
         avatar: 'userAvatar',
       })
       .expect(200);
-    expect(res.text).toContain('true');
-  });
-
-  it('should throw error auth guard create/post', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/user/:22/post')
-      .set({ authorization: 'Unknown token' })
-      .send({})
-      .expect(401);
-    expect(res.text).toContain(
-      'Unknown type authorization, please enter in application & repeat request',
-    );
-  });
-
-  it('should throw error validation pipe create/post', async () => {
-    jest
-      .spyOn(tokenService, 'verifyToken')
-      .mockResolvedValue({ userId: 22 as never });
-
-    const res = await request(app.getHttpServer())
-      .post('/user/:22/post')
-      .set({ authorization: 'Bearer token' })
-      .send({})
-      .expect(400);
-    expect(res.text).toContain(
-      'content must be longer than or equal to 2 characters',
-    );
-    expect(res.text).toContain(
-      'title must be shorter than or equal to 100 characters',
-    );
-  });
-
-  it('should pass, and call func create post', async () => {
-    jest
-      .spyOn(tokenService, 'verifyToken')
-      .mockResolvedValue({ userId: 22 as never });
-
-    const res = await request(app.getHttpServer())
-      .post('/user/:22/post')
-      .set({ authorization: 'Bearer token' })
-      .send({
-        content: 'Post content',
-        title: 'Post title',
-        category: 'soccer',
-        categories: ['footbal'],
-      })
-      .expect(201);
-    expect(res.text).toContain('true');
-  });
-
-  it('should throw error auth guard create/comment', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/user/:22/comment')
-      .set({ authorization: 'Unknown token' })
-      .send({})
-      .expect(401);
-    expect(res.text).toContain(
-      'Unknown type authorization, please enter in application & repeat request',
-    );
-  });
-
-  it('should throw error validation pipe create/ comment', async () => {
-    jest
-      .spyOn(tokenService, 'verifyToken')
-      .mockResolvedValue({ userId: 22 as never });
-
-    const res = await request(app.getHttpServer())
-      .post('/user/:22/comment')
-      .set({ authorization: 'Bearer token' })
-      .send({})
-      .expect(400);
-    expect(res.text).toContain(
-      'content must be longer than or equal to 2 characters',
-    );
-    expect(res.text).toContain(
-      'content must be shorter than or equal to 1000 characters',
-    );
-    expect(res.text).toContain('postId must be an integer number');
-  });
-
-  it('should pass, and call func create comment', async () => {
-    jest
-      .spyOn(tokenService, 'verifyToken')
-      .mockResolvedValue({ userId: 22 as never });
-
-    const res = await request(app.getHttpServer())
-      .post('/user/:22/comment')
-      .set({ authorization: 'Bearer token' })
-      .send({
-        content: 'Comment content',
-        postId: 2,
-      })
-      .expect(201);
     expect(res.text).toContain('true');
   });
 });

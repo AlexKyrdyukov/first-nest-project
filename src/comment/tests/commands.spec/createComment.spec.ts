@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import PostEntity from '../../../db/entities/Post';
 import CommentEntity from '../../../db/entities/Comment';
 
-import { CreateCommentHandler } from '../../../user/commands/handlers/createCommentHandler';
+import { CreateCommentHandler } from '../../commands/handlers/createCommentHandler';
 import { CommentRepositoryFake } from '../../../../tests/fakeAppRepo/fakeCommentRepositories';
 import { PostRepositoryFake } from '../../../../tests/fakeAppRepo/fakePostRepoitory';
 

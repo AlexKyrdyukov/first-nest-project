@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import PostEntity from '../../../db/entities/Post';
 import CategoryEntity from '../../../db/entities/Categories';
 
-import { CreatePostHandler } from '../../../user/commands/handlers/createPostHandler';
+import { CreatePostHandler } from '../../commands/handlers/createPostHandler';
 import { PostRepositoryFake } from '../../../../tests/fakeAppRepo/fakePostRepoitory';
 import { CategoryRepositoryFake } from '../../../../tests/fakeAppRepo/fakeCategoryRepository';
 

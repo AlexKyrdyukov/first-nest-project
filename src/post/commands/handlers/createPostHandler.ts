@@ -4,7 +4,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import PostEntity from '../../../db/entities/Post';
 import CategoriesEntity from '../../../db/entities/Categories';
-import { CreatePostCommand } from './../implementations/createPostCommand';
+import { CreatePostCommand } from '../implementations/createPostCommand';
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {

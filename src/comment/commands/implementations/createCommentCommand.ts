@@ -1,4 +1,4 @@
-import { CreateCommentDto } from '../../../user/dto/createCommentDto';
+import { CreateCommentDto } from '../../dto/createCommentDto';
 import UserEntity from '../../../db/entities/User';
 
 export class CreateCommentCommand {

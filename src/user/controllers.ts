@@ -1,4 +1,4 @@
-import { CreatePostCommand } from './commands/implementations/createPostCommand';
+import { CreatePostCommand } from '../post/commands/implementations/createPostCommand';
 import { PatchDataCommand } from './commands/implementations/patchDataCommand';
 import {
   Body,
@@ -36,18 +36,17 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { PatchPasswordCommand } from './commands/implementations/patchPasswordCommand';
 import { RemoveUserCommand } from './commands/implementations/removeUserCommand';
 import { SetAvatarCommand } from './commands/implementations/setAvatarCommand';
-import { CreatePostDto } from './dto/createPostDto';
-import { CreateCommentDto } from './dto/createCommentDto';
-import { CreateCommentCommand } from './commands/implementations/createCommentCommand';
+import { CreatePostDto } from '../post/dto/createPostDto';
+import { CreateCommentDto } from '../comment/dto/createCommentDto';
+import { CreateCommentCommand } from '../comment/commands/implementations/createCommentCommand';
 import { Roles } from '../roles/rolesDecorator';
 import { RolesGuard } from '../roles/rolesGuard';
 
 @ApiTags('user api')
 @Controller('user')
 @ApiHeader({ name: 'deviceId' })
-@UseGuards(AuthGuard)
-@UseGuards(RolesGuard)
-class UserController {
+@UseGuards(AuthGuard, RolesGuard)
+export class UserControllers {
   constructor(private readonly commandBus: CommandBus) {}
 
   @ApiOperation({ summary: 'delete user' })
@@ -123,42 +122,40 @@ class UserController {
     return this.commandBus.execute(new SetAvatarCommand(body.avatar, userDto));
   }
 
-  @ApiOperation({ summary: 'create post' })
-  @ApiBody({
-    type: CreatePostDto, // postdto
-  })
-  @ApiParam({
-    type: UserParamDto,
-    name: 'userId',
-  })
-  @ApiResponse({ status: 200, type: PostEntity })
-  @Post(':userId/post')
-  @Roles('admin, user, intern') // add role
-  async createPost(
-    @Body(new ValidationPipe({ whitelist: true })) body: CreatePostDto,
-    @User() userDto: UserEntity,
-  ) {
-    return this.commandBus.execute(new CreatePostCommand(body, userDto));
-  }
+  // @ApiOperation({ summary: 'create post' })
+  // @ApiBody({
+  //   type: CreatePostDto, // postdto
+  // })
+  // @ApiParam({
+  //   type: UserParamDto,
+  //   name: 'userId',
+  // })
+  // @ApiResponse({ status: 200, type: PostEntity })
+  // @Post(':userId/post')
+  // @Roles('admin, user, intern') // add role
+  // async createPost(
+  //   @Body(new ValidationPipe({ whitelist: true })) body: CreatePostDto,
+  //   @User() userDto: UserEntity,
+  // ) {
+  //   return this.commandBus.execute(new CreatePostCommand(body, userDto));
+  // }
 
-  @ApiOperation({ summary: 'create comment' })
-  @ApiBody({
-    type: CreateCommentDto,
-  })
-  @ApiParam({
-    type: UserParamDto,
-    name: 'userId',
-  })
-  @ApiResponse({ status: 200, type: PostEntity })
-  @Post(':userId/comment')
-  @Roles('admin, user, intern') // add role
-  async createComment(
-    @Body(new ValidationPipe({ whitelist: true }))
-    body: CreateCommentDto,
-    @User() userDto: UserEntity,
-  ) {
-    return this.commandBus.execute(new CreateCommentCommand(body, userDto));
-  }
+  // @ApiOperation({ summary: 'create comment' })
+  // @ApiBody({
+  //   type: CreateCommentDto,
+  // })
+  // @ApiParam({
+  //   type: UserParamDto,
+  //   name: 'userId',
+  // })
+  // @ApiResponse({ status: 200, type: PostEntity })
+  // @Post(':userId/comment')
+  // @Roles('admin, user, intern') // add role
+  // async createComment(
+  //   @Body(new ValidationPipe({ whitelist: true }))
+  //   body: CreateCommentDto,
+  //   @User() userDto: UserEntity,
+  // ) {
+  //   return this.commandBus.execute(new CreateCommentCommand(body, userDto));
+  // }
 }
-
-export default UserController;

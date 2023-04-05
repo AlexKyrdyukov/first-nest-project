@@ -2,7 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import RedisModule from '../redis/module';
-import UserController from './controllers';
+import { UserControllers } from './controllers';
 import TokenService from '../token/service';
 import UserEntity from '../db/entities/User';
 import CryptoModule from '../crypto/module';
@@ -26,7 +26,7 @@ import CommentEntity from '../db/entities/Comment';
     CqrsModule,
   ],
   providers: [...CommandHandlers, TokenService],
-  controllers: [UserController],
+  controllers: [UserControllers],
   exports: [],
 })
 class UserModule {}

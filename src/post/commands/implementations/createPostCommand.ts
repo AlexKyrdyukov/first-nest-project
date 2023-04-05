@@ -1,4 +1,4 @@
-import { CreatePostDto } from '../../../user/dto/createPostDto';
+import { CreatePostDto } from '../../dto/createPostDto';
 import UserEntity from '../../../db/entities/User';
 
 export class CreatePostCommand {

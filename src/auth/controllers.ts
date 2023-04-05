@@ -34,10 +34,8 @@ import { RefreshResponse, RefreshTokenDto } from './dto/refreshDto';
 @ApiTags('auth api')
 @ApiHeader({ name: 'deviceId' })
 @Controller('auth')
-@UseGuards(AuthGuard)
 class AuthController {
   constructor(private readonly commandBus: CommandBus) {}
-
   @ApiOperation({
     summary: 'authorization user in system, return user with tokens',
   })

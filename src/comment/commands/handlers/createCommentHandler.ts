@@ -32,7 +32,7 @@ export class CreateCommentHandler
 
     if (!post) {
       throw new HttpException(
-        'Unknown error please repeat request',
+        'This post not found please check data & repeat request',
         HttpStatus.BAD_REQUEST,
       );
     }
