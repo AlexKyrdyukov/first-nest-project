@@ -7,7 +7,7 @@ import { PostControllers } from './controllers';
 import RedisModule from '../redis/module';
 import UserEntity from '../db/entities/User';
 import { CqrsModule } from '@nestjs/cqrs';
-import CategoryEntity from 'src/db/entities/Categories';
+import CategoryEntity from '../db/entities/Categories';
 
 @Module({
   imports: [
