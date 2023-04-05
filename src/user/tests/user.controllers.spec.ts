@@ -11,6 +11,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
 import { CommandBus } from '@nestjs/cqrs';
 import { Repository } from 'typeorm';
+import UserModule from '../module';
+import { AppModule } from '../../app.module';
 
 describe('should check work useer controller', () => {
   let app: INestApplication;
@@ -21,6 +23,8 @@ describe('should check work useer controller', () => {
       controllers: [UserControllers],
       providers: [
         TokenService,
+        UserModule,
+        AppModule,
         {
           provide: CommandBus,
           useValue: { execute: () => true },

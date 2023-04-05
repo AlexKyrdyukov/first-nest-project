@@ -76,7 +76,7 @@
   },
   "jest": {
     "testPathIgnorePatterns": ["src/db", "src/config.ts"],
-    "coveragePathIgnorePatterns": ["src/db", "src/config.ts", ".module.ts"],
+    "coveragePathIgnorePatterns": ["src/db", "src/config.ts"],
     "modulePathIgnorePatterns": ["src/db", "src/config.ts"],
     "moduleFileExtensions": [
       "js",

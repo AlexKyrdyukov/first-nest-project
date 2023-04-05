@@ -1,5 +1,6 @@
 import { BadRequestException, HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import CryptoModule from '../module';
 import CryptoService from '../service';
 
 describe('CryptoService', () => {
@@ -7,7 +8,7 @@ describe('CryptoService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CryptoService],
+      providers: [CryptoService, CryptoModule],
     }).compile();
 
     service = module.get<CryptoService>(CryptoService);

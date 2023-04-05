@@ -84,7 +84,9 @@ describe('check create comment handler', () => {
       await createComment.execute(handlerParams);
     } catch (error) {
       expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe('Unknown error please repeat request');
+      expect(error.message).toBe(
+        'This post not found please check data & repeat request',
+      );
     }
   });
 

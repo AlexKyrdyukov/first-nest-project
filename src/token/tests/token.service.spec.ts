@@ -4,6 +4,7 @@ import TokenService from '../service';
 import RedisService from '../../redis/service';
 import config from '../../config';
 import { FakeRedisService } from '../../../tests/fakeAppRepo/fakeRedisServis';
+import TokenModule from '../module';
 
 class RedisFakeService {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -31,6 +32,7 @@ describe('token service test', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TokenService,
+        TokenModule,
         {
           provide: RedisService,
           // useClass: RedisFakeService,

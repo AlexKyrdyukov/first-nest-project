@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import RedisModule from '../module';
 import RedisService from '../service';
 
 class RedisRepositoryFake {
@@ -28,6 +29,7 @@ describe('redis service test', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RedisService,
+        RedisModule,
         {
           provide: 'REDIS_CLIENT',
           useClass: RedisRepositoryFake,

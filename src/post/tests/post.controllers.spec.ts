@@ -1,3 +1,4 @@
+import { PostModule } from './../module';
 import { AuthGuard } from '../../auth/authGuard';
 import RedisService from '../../redis/service';
 import TokenService from '../../token/service';
@@ -10,7 +11,6 @@ import { PostControllers } from '../controllers';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
 import { CommandBus } from '@nestjs/cqrs';
-import { RolesGuard } from '../../roles/rolesGuard';
 import { Repository } from 'typeorm';
 
 describe('should check work useer controller', () => {
@@ -21,6 +21,7 @@ describe('should check work useer controller', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostControllers],
       providers: [
+        PostModule,
         TokenService,
         {
           provide: CommandBus,
