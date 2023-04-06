@@ -30,7 +30,11 @@ export default (async () => {
         methodKey,
     };
     const document = SwaggerModule.createDocument(app, swaggerConfig, options);
-    SwaggerModule.setup('/api/docs', app, document);
+    SwaggerModule.setup('/api/docs', app, document, {
+      customfavIcon:
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/35.png',
+      customSiteTitle: 'My App documentation',
+    });
     app.use(appMiddleware);
     await app.listen(config.server.port, () => {
       Logger.log(`app listening on port ${config.server.port}`);

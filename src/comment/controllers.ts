@@ -29,9 +29,9 @@ import { CreateCommentDto } from './dto/createCommentDto';
 import { UserParamDto } from '../user/dto/userParamDto';
 import { CreateCommentCommand } from './commands/implementations/createCommentCommand';
 
-@ApiTags('comment api')
 @Controller('comment')
-@ApiHeader({ name: 'deviceId' })
+@ApiTags('comment api')
+@ApiHeader({ name: 'device_id' })
 @UseGuards(AuthGuard, RolesGuard)
 export class CommentControllers {
   constructor(private readonly commandBus: CommandBus) {}
@@ -45,6 +45,10 @@ export class CommentControllers {
     name: 'userId',
   })
   @ApiResponse({ status: 200, type: PostEntity })
+  @ApiResponse({
+    status: 400,
+    description: 'This post not found please check data & repeat request',
+  })
   @Post('/create')
   @Roles('admin', 'user', 'intern') // add role
   async createComment(

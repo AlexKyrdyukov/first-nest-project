@@ -11,7 +11,9 @@ import {
 
 import {
   ApiBody,
+  ApiExcludeEndpoint,
   ApiHeader,
+  ApiHeaders,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -34,18 +36,17 @@ import { SignUpUserCommand } from './commands/implementations/signUpUserCommand'
 import { SignInUserCommand } from './commands/implementations/signInUserCommand';
 import { RefreshUserCommand } from './commands/implementations/refreshUserCommand';
 
-@ApiTags('auth api')
-@ApiHeader({ name: 'deviceId' })
 @Controller('auth')
+@ApiTags('auth api')
 class AuthController {
   constructor(private readonly commandBus: CommandBus) {}
+  @Post('sign-in')
   @ApiOperation({
     summary: 'authorization user in system, return user with tokens',
   })
   @ApiBody({ type: SignInUserDto })
   @ApiResponse({ status: 200, type: SignInResponse })
   @ApiResponse({ status: 400, description: 'Error existen user' })
-  @Post('sign-in')
   @HttpCode(200)
   async signIn(
     @Body(new ValidationPipe({ whitelist: true })) dto: SignInUserDto,
@@ -56,10 +57,14 @@ class AuthController {
     );
   }
 
+  @Post('sign-up')
   @ApiOperation({ summary: 'created user with tokens' })
   @ApiBody({ type: SignUpUserDto })
   @ApiResponse({ status: 201, type: SignUpResponse })
-  @Post('sign-up')
+  @ApiResponse({
+    status: 400,
+    description: 'user with this email already exist',
+  })
   async signUp(
     @Body(new ValidationPipe({ whitelist: true })) dto: SignUpUserDto,
     @Headers() headers: DeviceIdDto,
@@ -69,21 +74,31 @@ class AuthController {
     );
   }
 
-  @ApiParam({ name: 'userId' })
+  @Get('me')
   @ApiOperation({ summary: 'return user properties' })
   @ApiResponse({ status: 200, type: UserEntity })
-  @Get('me')
   @Roles('user') // add role
   @UseGuards(AuthGuard)
+  @ApiHeader({
+    name: 'device_id',
+    description: '12345',
+    example: '12345',
+    required: true,
+  })
   async getMe(@User() reqUser: UserEntity) {
     const { password, comment, posts, ...user } = reqUser;
     return user;
   }
 
+  @Post('refresh')
   @ApiOperation({ summary: 'refresh user token' })
   @ApiBody({ type: RefreshTokenDto })
   @ApiResponse({ status: 201, type: RefreshResponse })
-  @Post('refresh')
+  @ApiResponse({
+    status: 401,
+    description:
+      'Unknown type authorization, please enter in application & repeat request',
+  })
   async refresh(
     @Body(new ValidationPipe()) dto: RefreshTokenDto,
     @Headers() headers: DeviceIdDto,

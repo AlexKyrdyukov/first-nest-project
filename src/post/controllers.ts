@@ -28,9 +28,9 @@ import { CreatePostDto } from './dto/createPostDto';
 import { UserParamDto } from '../user/dto/userParamDto';
 import { CreatePostCommand } from './commands/implementations/createPostCommand';
 
-@ApiTags('post api')
 @Controller('post')
-@ApiHeader({ name: 'deviceId' })
+@ApiTags('post api')
+@ApiHeader({ name: 'device_id' })
 @UseGuards(AuthGuard, RolesGuard)
 export class PostControllers {
   constructor(private readonly commandBus: CommandBus) {}

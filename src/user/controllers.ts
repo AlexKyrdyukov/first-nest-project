@@ -38,9 +38,9 @@ import { SetAvatarCommand } from './commands/implementations/setAvatarCommand';
 import { RemoveUserCommand } from './commands/implementations/removeUserCommand';
 import { PatchPasswordCommand } from './commands/implementations/patchPasswordCommand';
 
-@ApiTags('user api')
 @Controller('user')
-@ApiHeader({ name: 'deviceId' })
+@ApiTags('user api')
+@ApiHeader({ name: 'device_id' })
 @UseGuards(AuthGuard, RolesGuard)
 export class UserControllers {
   constructor(private readonly commandBus: CommandBus) {}
