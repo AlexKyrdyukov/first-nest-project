@@ -17,7 +17,8 @@ export class RolesGuard implements CanActivate {
         'roles',
         context.getHandler(),
       );
-      if (!routeRoles) {
+
+      if (!routeRoles.length) {
         return true;
       }
       const request: { user: UserEntity } = context.switchToHttp().getRequest();

@@ -44,6 +44,7 @@ class AuthController {
   })
   @ApiBody({ type: SignInUserDto })
   @ApiResponse({ status: 200, type: SignInResponse })
+  @ApiResponse({ status: 400, description: 'Error existen user' })
   @Post('sign-in')
   @HttpCode(200)
   async signIn(

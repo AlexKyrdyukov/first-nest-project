@@ -34,7 +34,6 @@ describe('check auth guard', () => {
     }).compile();
     authGuard = module.get(AuthGuard);
     tokenService = module.get(TokenService);
-    // mockContext = createMock<ExecutionContext>();
   });
 
   afterEach(() => {
