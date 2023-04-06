@@ -1,5 +1,3 @@
-import { CreatePostCommand } from '../post/commands/implementations/createPostCommand';
-import { PatchDataCommand } from './commands/implementations/patchDataCommand';
 import {
   Body,
   Controller,
@@ -7,9 +5,7 @@ import {
   Param,
   Patch,
   Post,
-  Get,
   UseGuards,
-  BadRequestException,
   ValidationPipe,
   HttpCode,
 } from '@nestjs/common';
@@ -22,25 +18,25 @@ import {
   ApiParam,
   ApiHeader,
 } from '@nestjs/swagger';
+import { CommandBus } from '@nestjs/cqrs';
 
-import { User } from './user.decorator';
 import UserEntity from '../db/entities/User';
+import { User } from './user.decorator';
+import { Roles } from '../roles/rolesDecorator';
+
 import { AuthGuard } from '../auth/authGuard';
+import { RolesGuard } from '../roles/rolesGuard';
+
 import { UserParamDto } from './dto/userParamDto';
 import { DeleteUserDto } from './dto/deleteUserDto';
 import { PatchDataDto } from './dto/patchDataDto';
 import { PatchPasswordDto } from './dto/patchPassword.dto';
-import PostEntity from '../db/entities/Post';
 import { SetAvatarUserDto } from './dto/setAvatarDto';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { PatchPasswordCommand } from './commands/implementations/patchPasswordCommand';
-import { RemoveUserCommand } from './commands/implementations/removeUserCommand';
+
+import { PatchDataCommand } from './commands/implementations/patchDataCommand';
 import { SetAvatarCommand } from './commands/implementations/setAvatarCommand';
-import { CreatePostDto } from '../post/dto/createPostDto';
-import { CreateCommentDto } from '../comment/dto/createCommentDto';
-import { CreateCommentCommand } from '../comment/commands/implementations/createCommentCommand';
-import { Roles } from '../roles/rolesDecorator';
-import { RolesGuard } from '../roles/rolesGuard';
+import { RemoveUserCommand } from './commands/implementations/removeUserCommand';
+import { PatchPasswordCommand } from './commands/implementations/patchPasswordCommand';
 
 @ApiTags('user api')
 @Controller('user')
@@ -75,7 +71,7 @@ export class UserControllers {
   @ApiResponse({ status: 200 })
   @Patch(':userId/password')
   @HttpCode(204)
-  @Roles('admin, user, intern') // add role
+  @Roles('admin', 'user', 'intern') // add role
   async patchUserPassword(
     @Body(new ValidationPipe({ whitelist: true }))
     body: PatchPasswordDto,
@@ -94,7 +90,7 @@ export class UserControllers {
   })
   @ApiResponse({ status: 200, type: UserEntity })
   @Patch(':userId')
-  @Roles('admin, user, intern') // add role
+  @Roles('admin', 'user', 'intern') // add role
   async patchUserData(
     @Body(new ValidationPipe({ skipMissingProperties: true, whitelist: true }))
     body: PatchDataDto,
@@ -114,48 +110,11 @@ export class UserControllers {
   @HttpCode(200)
   @ApiResponse({ status: 200, type: UserEntity })
   @Post(':userId/avatar')
-  @Roles('admin, user, intern') // add role
+  @Roles('admin', 'user', 'intern') // add role
   async setUserAvatar(
     @Body(new ValidationPipe({ whitelist: true })) body: SetAvatarUserDto,
     @User() userDto: UserEntity,
   ) {
     return this.commandBus.execute(new SetAvatarCommand(body.avatar, userDto));
   }
-
-  // @ApiOperation({ summary: 'create post' })
-  // @ApiBody({
-  //   type: CreatePostDto, // postdto
-  // })
-  // @ApiParam({
-  //   type: UserParamDto,
-  //   name: 'userId',
-  // })
-  // @ApiResponse({ status: 200, type: PostEntity })
-  // @Post(':userId/post')
-  // @Roles('admin, user, intern') // add role
-  // async createPost(
-  //   @Body(new ValidationPipe({ whitelist: true })) body: CreatePostDto,
-  //   @User() userDto: UserEntity,
-  // ) {
-  //   return this.commandBus.execute(new CreatePostCommand(body, userDto));
-  // }
-
-  // @ApiOperation({ summary: 'create comment' })
-  // @ApiBody({
-  //   type: CreateCommentDto,
-  // })
-  // @ApiParam({
-  //   type: UserParamDto,
-  //   name: 'userId',
-  // })
-  // @ApiResponse({ status: 200, type: PostEntity })
-  // @Post(':userId/comment')
-  // @Roles('admin, user, intern') // add role
-  // async createComment(
-  //   @Body(new ValidationPipe({ whitelist: true }))
-  //   body: CreateCommentDto,
-  //   @User() userDto: UserEntity,
-  // ) {
-  //   return this.commandBus.execute(new CreateCommentCommand(body, userDto));
-  // }
 }

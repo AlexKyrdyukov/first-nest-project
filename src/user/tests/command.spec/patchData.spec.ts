@@ -4,9 +4,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import UserEntity from '../../../db/entities/User';
 import AddressEntity from '../../../db/entities/Address';
 
-import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddressRepository';
 import { PatchDataHandler } from '../../commands/handlers/patchDataHandler';
 import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserRepository';
+import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddressRepository';
 
 describe('check handler update user data', () => {
   let patchDataHandler: PatchDataHandler;

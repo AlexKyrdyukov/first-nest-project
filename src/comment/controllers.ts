@@ -17,13 +17,16 @@ import {
 } from '@nestjs/swagger';
 
 import PostEntity from '../db/entities/Post';
-import { UserParamDto } from '../user/dto/userParamDto';
+import UserEntity from '../db/entities/User';
+
 import { AuthGuard } from '../auth/authGuard';
 import { RolesGuard } from '../roles/rolesGuard';
-import { CreateCommentDto } from './dto/createCommentDto';
-import { Roles } from '../roles/rolesDecorator';
+
 import { User } from '../user/user.decorator';
-import UserEntity from '../db/entities/User';
+import { Roles } from '../roles/rolesDecorator';
+
+import { CreateCommentDto } from './dto/createCommentDto';
+import { UserParamDto } from '../user/dto/userParamDto';
 import { CreateCommentCommand } from './commands/implementations/createCommentCommand';
 
 @ApiTags('comment api')
@@ -43,7 +46,7 @@ export class CommentControllers {
   })
   @ApiResponse({ status: 200, type: PostEntity })
   @Post('/create')
-  @Roles('admin, user, intern') // add role
+  @Roles('admin', 'user', 'intern') // add role
   async createComment(
     @Body(new ValidationPipe({ whitelist: true }))
     body: CreateCommentDto,

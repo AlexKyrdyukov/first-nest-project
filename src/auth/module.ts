@@ -1,14 +1,17 @@
-import { TypeOrmModule } from '@nestjs/typeorm';
-import UserEntity from '../db/entities/User';
+import { Repository } from 'typeorm';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import AuthController from './controllers';
-import { CommandHandlers } from './commands/handlers';
-import AddressEntity from '../db/entities/Address';
-import { Repository } from 'typeorm';
-import CryptoModule from '../crypto/module';
-import TokenModule from '../token/module';
+import UserEntity from '../db/entities/User';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import RoleEntity from '../db/entities/Role';
+import AddressEntity from '../db/entities/Address';
+
+import AuthController from './controllers';
+
+import TokenModule from '../token/module';
+import CryptoModule from '../crypto/module';
+import { CommandHandlers } from './commands/handlers';
 @Module({
   imports: [
     CqrsModule,

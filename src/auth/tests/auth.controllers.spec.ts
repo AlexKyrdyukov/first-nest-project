@@ -1,4 +1,3 @@
-import { AuthModule } from './../module';
 import { CommandBus } from '@nestjs/cqrs';
 import * as request from 'supertest';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -19,7 +18,6 @@ describe('check auth controllers', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AuthModule,
         TokenService,
         {
           provide: CommandBus,

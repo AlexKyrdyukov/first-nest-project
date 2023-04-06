@@ -5,6 +5,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import PostEntity from '../../../db/entities/Post';
 import CommentEntity from '../../../db/entities/Comment';
+
 import { CreateCommentCommand } from '../implementations/createCommentCommand';
 
 @CommandHandler(CreateCommentCommand)

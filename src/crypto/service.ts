@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
-import config from '../config';
 import { promisify } from 'util';
+import * as crypto from 'crypto';
+
+import config from '../config';
 
 const pbkdf2Async = promisify(crypto.pbkdf2);
 const randBytes = promisify(crypto.randomBytes);

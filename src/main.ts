@@ -7,10 +7,11 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 
+import config from './config';
 import { AppModule } from './app.module';
 import { appMiddleware } from './app.middleware';
-import config from './config';
-(async () => {
+
+export default (async () => {
   try {
     const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix(config.server.endointsPrefix);

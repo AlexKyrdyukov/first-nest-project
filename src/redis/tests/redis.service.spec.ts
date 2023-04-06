@@ -1,7 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import RedisModule from '../module';
 import RedisService from '../service';
-
 class RedisRepositoryFake {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async set(): Promise<void> {}
@@ -29,7 +27,6 @@ describe('redis service test', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RedisService,
-        RedisModule,
         {
           provide: 'REDIS_CLIENT',
           useClass: RedisRepositoryFake,

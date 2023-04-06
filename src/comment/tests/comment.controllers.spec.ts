@@ -1,17 +1,18 @@
-import { CommentControllers } from '../controllers';
-import { AuthGuard } from './../../auth/authGuard';
+import * as request from 'supertest';
+import { Repository } from 'typeorm';
+import { CommandBus } from '@nestjs/cqrs';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+
 import RedisService from '../../redis/service';
 import TokenService from '../../token/service';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+
+import { AuthGuard } from './../../auth/authGuard';
+import { CommentControllers } from '../controllers';
 
 import UserEntity from '../../db/entities/User';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
-import { CommandBus } from '@nestjs/cqrs';
-import { RolesGuard } from '../../roles/rolesGuard';
-import { Repository } from 'typeorm';
 
 describe('should check work useer controller', () => {
   let app: INestApplication;

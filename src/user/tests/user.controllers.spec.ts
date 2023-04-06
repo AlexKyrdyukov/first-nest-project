@@ -1,18 +1,18 @@
-import { AuthGuard } from './../../auth/authGuard';
-import RedisService from '../../redis/service';
-import TokenService from '../../token/service';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+import { Repository } from 'typeorm';
+import { CommandBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 import UserEntity from '../../db/entities/User';
+import { AuthGuard } from './../../auth/authGuard';
+
+import RedisService from '../../redis/service';
+import TokenService from '../../token/service';
+
 import { UserControllers } from '../controllers';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
-import { CommandBus } from '@nestjs/cqrs';
-import { Repository } from 'typeorm';
-import UserModule from '../module';
-import { AppModule } from '../../app.module';
 
 describe('should check work useer controller', () => {
   let app: INestApplication;
@@ -23,8 +23,6 @@ describe('should check work useer controller', () => {
       controllers: [UserControllers],
       providers: [
         TokenService,
-        UserModule,
-        AppModule,
         {
           provide: CommandBus,
           useValue: { execute: () => true },

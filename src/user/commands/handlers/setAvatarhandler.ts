@@ -1,8 +1,8 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import * as setAvatarCommand from '../implementations/setAvatarCommand';
 import UserEntity from '../../../db/entities/User';
-import { Repository } from 'typeorm';
 
 @CommandHandler(setAvatarCommand.SetAvatarCommand)
 export class SetAvatarHandler

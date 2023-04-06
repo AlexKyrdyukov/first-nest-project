@@ -4,25 +4,6 @@ import TokenService from '../service';
 import RedisService from '../../redis/service';
 import config from '../../config';
 import { FakeRedisService } from '../../../tests/fakeAppRepo/fakeRedisServis';
-import TokenModule from '../module';
-
-class RedisFakeService {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async set(): Promise<void> {}
-  public async get(): Promise<string | null> {
-    return 'test';
-  }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public async remove(): Promise<void> {}
-
-  public createKey(): string {
-    return 'test:key';
-  }
-
-  public confirmationStringType(value: unknown): value is string {
-    return (value as string)?.length !== undefined;
-  }
-}
 
 describe('token service test', () => {
   let tokenService: TokenService;
@@ -32,10 +13,8 @@ describe('token service test', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TokenService,
-        TokenModule,
         {
           provide: RedisService,
-          // useClass: RedisFakeService,
           useClass: FakeRedisService,
         },
       ],

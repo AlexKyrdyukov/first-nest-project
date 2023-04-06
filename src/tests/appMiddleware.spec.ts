@@ -1,7 +1,7 @@
 import { HttpException } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
-import { appMiddleware } from '../app.middleware';
 import { Request, Response, NextFunction } from 'express';
+import { appMiddleware } from '../app.middleware';
 
 describe('check app Middleware', () => {
   const request: Request = createMock<Request>();

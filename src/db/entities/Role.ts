@@ -37,7 +37,7 @@ class Role {
     description: 'post category',
   })
   @typeorm.Column({ nullable: false, unique: true })
-  name?: string;
+  name: string;
 
   @ApiProperty({
     description: 'users relation with roles',

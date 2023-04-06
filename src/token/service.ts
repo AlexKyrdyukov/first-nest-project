@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import RedisService from '../redis/service';
 import config from '../config';
+import RedisService from '../redis/service';
 
 type Payload = Record<string, never>;
 

@@ -1,4 +1,3 @@
-import { RefreshUserCommand } from './commands/implementations/refreshUserCommand';
 import {
   Body,
   Controller,
@@ -18,18 +17,22 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { CommandBus } from '@nestjs/cqrs';
 
-import { AuthGuard } from './authGuard';
 import UserEntity from '../db/entities/User';
+
 import { User } from '../user/user.decorator';
 import { Roles } from '../roles/rolesDecorator';
-import { SignUpResponse, SignUpUserDto } from './dto/signUpUserDto';
-import { CommandBus } from '@nestjs/cqrs';
+import { AuthGuard } from './authGuard';
+
 import { DeviceIdDto } from './dto/deviceIdDto';
-import { SignUpUserCommand } from './commands/implementations/signUpUserCommand';
+import { SignUpResponse, SignUpUserDto } from './dto/signUpUserDto';
 import { SignInResponse, SignInUserDto } from './dto/signInUserDto';
-import { SignInUserCommand } from './commands/implementations/signInUserCommand';
 import { RefreshResponse, RefreshTokenDto } from './dto/refreshDto';
+
+import { SignUpUserCommand } from './commands/implementations/signUpUserCommand';
+import { SignInUserCommand } from './commands/implementations/signInUserCommand';
+import { RefreshUserCommand } from './commands/implementations/refreshUserCommand';
 
 @ApiTags('auth api')
 @ApiHeader({ name: 'deviceId' })
@@ -42,7 +45,6 @@ class AuthController {
   @ApiBody({ type: SignInUserDto })
   @ApiResponse({ status: 200, type: SignInResponse })
   @Post('sign-in')
-  @Roles('user') // add role
   @HttpCode(200)
   async signIn(
     @Body(new ValidationPipe({ whitelist: true })) dto: SignInUserDto,
@@ -57,7 +59,6 @@ class AuthController {
   @ApiBody({ type: SignUpUserDto })
   @ApiResponse({ status: 201, type: SignUpResponse })
   @Post('sign-up')
-  @Roles('user') // add role
   async signUp(
     @Body(new ValidationPipe({ whitelist: true })) dto: SignUpUserDto,
     @Headers() headers: DeviceIdDto,
@@ -82,7 +83,6 @@ class AuthController {
   @ApiBody({ type: RefreshTokenDto })
   @ApiResponse({ status: 201, type: RefreshResponse })
   @Post('refresh')
-  @Roles('user') // add role
   async refresh(
     @Body(new ValidationPipe()) dto: RefreshTokenDto,
     @Headers() headers: DeviceIdDto,

@@ -1,4 +1,3 @@
-import { PostModule } from './../module';
 import { AuthGuard } from '../../auth/authGuard';
 import RedisService from '../../redis/service';
 import TokenService from '../../token/service';
@@ -21,7 +20,6 @@ describe('should check work useer controller', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostControllers],
       providers: [
-        PostModule,
         TokenService,
         {
           provide: CommandBus,
@@ -36,10 +34,7 @@ describe('should check work useer controller', () => {
           useClass: UserRepositoryFake,
         },
       ],
-    })
-      // .overrideGuard(RolesGuard)
-      // .useValue(true)
-      .compile();
+    }).compile();
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     tokenService = module.get(TokenService);

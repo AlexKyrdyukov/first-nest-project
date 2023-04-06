@@ -1,16 +1,11 @@
 import {
-  BadGatewayException,
-  CallHandler,
   CanActivate,
   ExecutionContext,
   HttpException,
   HttpStatus,
   Injectable,
-  NestInterceptor,
-  RequestTimeoutException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { Repository } from 'typeorm';
 
 import UserEntity from '../db/entities/User';
@@ -27,7 +22,6 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const { headers, params } = request;
-    // const id = params.userId;
     const { authorization } = headers;
     if (!authorization) {
       throw new HttpException(
@@ -43,10 +37,6 @@ export class AuthGuard implements CanActivate {
       );
     }
     const { userId } = await this.tokenService.verifyToken(token);
-    // console.log(id, userId);
-    // if (id || Number(id) !== Number(userId)) {
-    //   throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    // }
 
     const user = await this.userRepository
       .createQueryBuilder('user')

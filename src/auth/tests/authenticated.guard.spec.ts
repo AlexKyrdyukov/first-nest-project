@@ -1,13 +1,17 @@
 import { createMock } from '@golevelup/ts-jest';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Test, TestingModule } from '@nestjs/testing';
-import { FakeRedisService } from './../../../tests/fakeAppRepo/fakeRedisServis';
-import { AuthGuard } from './../authGuard';
 import { ExecutionContext, HttpException } from '@nestjs/common';
-import TokenService from '../../token/service';
+import { Test, TestingModule } from '@nestjs/testing';
+
 import UserEntity from '../../db/entities/User';
-import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
+
+import { AuthGuard } from './../authGuard';
+
+import TokenService from '../../token/service';
 import RedisService from '../../redis/service';
+
+import { FakeRedisService } from './../../../tests/fakeAppRepo/fakeRedisServis';
+import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
 
 describe('check auth guard', () => {
   let authGuard: AuthGuard;
@@ -53,7 +57,6 @@ describe('check auth guard', () => {
       },
     };
     mockContext.switchToHttp().getRequest.mockReturnValue(request);
-    // const res = await authGuard.canActivate(mockContext);
     try {
       await authGuard.canActivate(mockContext);
     } catch (error) {

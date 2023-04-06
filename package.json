@@ -75,9 +75,18 @@
     "typescript": "^4.7.4"
   },
   "jest": {
-    "testPathIgnorePatterns": ["src/db", "src/config.ts"],
-    "coveragePathIgnorePatterns": ["src/db", "src/config.ts"],
-    "modulePathIgnorePatterns": ["src/db", "src/config.ts"],
+    "testPathIgnorePatterns": [
+      "src/db",
+      "src/config.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "src/db",
+      "src/config.ts"
+    ],
+    "modulePathIgnorePatterns": [
+      "src/db",
+      "src/config.ts"
+    ],
     "moduleFileExtensions": [
       "js",
       "json",
