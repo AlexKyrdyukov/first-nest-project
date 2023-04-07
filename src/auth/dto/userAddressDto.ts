@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UserAddressDto {
   @ApiProperty({
-    example: 'user@email.ru',
+    example: 'United states of America',
     description: 'email post address',
   })
   @IsString()
@@ -23,7 +23,7 @@ export class UserAddressDto {
   city: string;
 
   @ApiProperty({
-    example: 'Obema chmo street',
+    example: 'Moscovskaya',
     description: 'stret of location',
   })
   @IsString()

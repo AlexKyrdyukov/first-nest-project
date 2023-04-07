@@ -8,6 +8,7 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiOperation,
@@ -31,6 +32,7 @@ import { CreatePostCommand } from './commands/implementations/createPostCommand'
 @Controller('post')
 @ApiTags('post api')
 @ApiHeader({ name: 'device_id' })
+@ApiBearerAuth('access-token')
 @UseGuards(AuthGuard, RolesGuard)
 export class PostControllers {
   constructor(private readonly commandBus: CommandBus) {}

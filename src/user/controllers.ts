@@ -17,6 +17,7 @@ import {
   ApiTags,
   ApiParam,
   ApiHeader,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 
@@ -40,6 +41,7 @@ import { PatchPasswordCommand } from './commands/implementations/patchPasswordCo
 
 @Controller('user')
 @ApiTags('user api')
+@ApiBearerAuth('access-token')
 @ApiHeader({ name: 'device_id' })
 @UseGuards(AuthGuard, RolesGuard)
 export class UserControllers {

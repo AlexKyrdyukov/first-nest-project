@@ -16,6 +16,7 @@ export class CreateCommentDto {
   @MinLength(2)
   readonly content: string;
 
+  @ApiProperty({ example: 2, description: 'id post' })
   @IsInt()
   @IsPositive()
   readonly postId: number;

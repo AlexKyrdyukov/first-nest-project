@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class RefreshTokenDto {
   @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.',
+    example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.',
     description: 'user refresh token',
   })
   @IsString()
@@ -14,13 +14,13 @@ export class RefreshTokenDto {
 
 export class RefreshResponse {
   @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.',
+    example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.',
     description: 'user access token',
   })
   accessToken: string;
 
   @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.',
+    example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.',
     description: 'user refres token',
   })
   refreshToken: string;

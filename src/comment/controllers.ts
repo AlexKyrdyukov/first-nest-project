@@ -8,6 +8,7 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiOperation,
@@ -31,6 +32,7 @@ import { CreateCommentCommand } from './commands/implementations/createCommentCo
 
 @Controller('comment')
 @ApiTags('comment api')
+@ApiBearerAuth('access-token')
 @ApiHeader({ name: 'device_id' })
 @UseGuards(AuthGuard, RolesGuard)
 export class CommentControllers {

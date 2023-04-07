@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-const validCategories = ['footbal', 'golf', 'basketball', 'live'];
+const validCategories = ['football', 'golf', 'basketball', 'live'];
 
 export class CreatePostDto {
   @ApiProperty({ example: 'post content', description: 'post content' })

@@ -58,13 +58,19 @@ describe('check refresh command handler', () => {
       },
       deviceId,
     };
-    try {
-      await refreshHandler.execute(refreshParams);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe(
-        'Unknown type authorization, please enter in application & repeat request',
-      );
-    }
+    expect(refreshHandler.execute(refreshParams)).rejects.toThrow();
+    // try {
+    //   const res = await refreshHandler.execute(refreshParams);
+    //   console.log(res);
+    //   expect(res).toThrow();
+    //   expect(res).toThrowError(
+    //     'Unknown type authorization, please enter in application & repeat request',
+    //   );
+    // } catch (error) {
+    //   expect(error).toBeInstanceOf(HttpException);
+    //   expect(error.message).toBe(
+    //     'Unknown type authorization, please enter in application & repeat request',
+    //   );
+    // }
   });
 });

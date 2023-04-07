@@ -10,12 +10,10 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBearerAuth,
   ApiBody,
-  ApiExcludeEndpoint,
   ApiHeader,
-  ApiHeaders,
   ApiOperation,
-  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -38,6 +36,7 @@ import { RefreshUserCommand } from './commands/implementations/refreshUserComman
 
 @Controller('auth')
 @ApiTags('auth api')
+@ApiBearerAuth('access-token')
 class AuthController {
   constructor(private readonly commandBus: CommandBus) {}
   @Post('sign-in')

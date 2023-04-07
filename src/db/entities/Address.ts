@@ -30,7 +30,7 @@ class Address {
   deletedDate: Date;
 
   @ApiProperty({
-    example: 'Obema chmo street',
+    example: 'Moscovskaya',
     description: 'stret of location',
   })
   @typeorm.Column()
@@ -40,7 +40,10 @@ class Address {
   @typeorm.Column()
   city: string;
 
-  @ApiProperty({ example: 'America', description: 'country of location' })
+  @ApiProperty({
+    example: 'United States oj America',
+    description: 'country of location',
+  })
   @typeorm.Column()
   country: string;
 

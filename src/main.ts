@@ -21,7 +21,10 @@ export default (async () => {
       .setVersion('0.0.1')
       .addTag('produced by Alexey Kurilov')
       .addBearerAuth(
-        { in: 'header', type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        {
+          type: 'http',
+          scheme: 'Bearer',
+        },
         'access-token',
       )
       .build();
