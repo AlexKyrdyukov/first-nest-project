@@ -2,7 +2,11 @@ import * as request from 'supertest';
 import { Repository } from 'typeorm';
 import { CommandBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  INestApplication,
+  ValidationPipe,
+  HttpException,
+} from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 import UserEntity from '../../db/entities/User';
@@ -14,7 +18,7 @@ import TokenService from '../../token/service';
 import { UserControllers } from '../controllers';
 import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
 
-describe('should check work useer controller', () => {
+describe('should check work user controllers', () => {
   let app: INestApplication;
   let tokenService: TokenService;
   let userRepository: Repository<UserEntity>;
@@ -58,11 +62,11 @@ describe('should check work useer controller', () => {
     jest
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .delete('/user/:22')
-      .set({ authorization: 'Bearer token' })
-      .expect(200);
-    expect(res.text).toContain('true');
+      .set({ authorization: 'Bearer token' });
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('true');
   });
 
   it('should throw error auth guard /delete "Please authorization in application"', async () => {
@@ -70,27 +74,30 @@ describe('should check work useer controller', () => {
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
-      .delete('/user/:22')
-      .expect(401);
-    expect(res.text).toContain('Please authorization in application');
+    const response = await request(app.getHttpServer()).delete('/user/:22');
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.status).toBe(401);
+    expect(response.text).toContain('Please authorization in application');
   });
 
   it('should throw error auth guard /delete "Unknown type authorization, please enter in application & repeat reques"', async () => {
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .delete('/user/:22')
-      .set({ authorization: 'Unknown token' })
-      .expect(401);
-    expect(res.text).toContain(
+      .set({ authorization: 'Unknown token' });
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.status).toBe(401);
+    expect(response.text).toContain(
       'Unknown type authorization, please enter in application & repeat reques',
     );
   });
 
   it('should throw error authGuard /patch/password "Please authorization in application"', async () => {
-    const res = await request(app.getHttpServer())
-      .patch('/user/:22/password')
-      .expect(401);
-    expect(res.text).toContain('Please authorization in application');
+    const response = await request(app.getHttpServer()).patch(
+      '/user/:22/password',
+    );
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.status).toBe(401);
+    expect(response.text).toContain('Please authorization in application');
   });
 
   it('should pass, and call function updated password', async () => {
@@ -113,20 +120,23 @@ describe('should check work useer controller', () => {
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .patch('/user/:22/password')
-      .set({ authorization: 'Bearer token' })
-      .expect(400);
-    expect(res.text).toContain('password must be a string');
-    expect(res.text).toContain('newPassword must be a string');
+      .set({ authorization: 'Bearer token' });
+
+    expect(response.status).toBe(400);
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.text).toContain('password must be a string');
+    expect(response.text).toContain('newPassword must be a string');
   });
 
   it('should throw error authGuard, route patch/userData', async () => {
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .patch('/user/:22')
-      .set({ authorization: 'Unknown token' })
-      .expect(401);
-    expect(res.text).toContain(
+      .set({ authorization: 'Unknown token' });
+    expect(response.status).toBe(401);
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.text).toContain(
       'Unknown type authorization, please enter in application & repeat request',
     );
   });
@@ -136,18 +146,19 @@ describe('should check work useer controller', () => {
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .patch('/user/:22')
       .send({})
-      .set({ authorization: 'Bearer token' })
-      .expect(400);
-    expect(res.text).toContain(
+      .set({ authorization: 'Bearer token' });
+    expect(response.status).toBe(400);
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.text).toContain(
       'email must be longer than or equal to 3 characters',
     );
-    expect(res.text).toContain(
+    expect(response.text).toContain(
       'fullName must be longer than or equal to 2 characters',
     );
-    expect(res.text).toContain('address should not be null or undefined');
+    expect(response.text).toContain('address should not be null or undefined');
   });
 
   it('should pass, and call func change user data', async () => {
@@ -155,7 +166,7 @@ describe('should check work useer controller', () => {
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .patch('/user/:22')
       .send({
         email: 'user@mail.com',
@@ -166,18 +177,19 @@ describe('should check work useer controller', () => {
           street: 'Petrovskaya',
         },
       })
-      .set({ authorization: 'Bearer token' })
-      .expect(200);
-    expect(res.text).toContain('true');
+      .set({ authorization: 'Bearer token' });
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('true');
   });
 
   it('should throw error auth guard user/avatar', async () => {
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/user/:22/avatar')
       .set({ authorization: 'Unknown token' })
-      .send({})
-      .expect(401);
-    expect(res.text).toContain(
+      .send({});
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.status).toBe(401);
+    expect(response.text).toContain(
       'Unknown type authorization, please enter in application & repeat request',
     );
   });
@@ -187,13 +199,14 @@ describe('should check work useer controller', () => {
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/user/:22/avatar')
       .set({ authorization: 'Bearer token' })
-      .send({})
-      .expect(400);
-    expect(res.text).toContain('avatar should not be empty');
-    expect(res.text).toContain('must be only string');
+      .send({});
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.status).toBe(400);
+    expect(response.text).toContain('avatar should not be empty');
+    expect(response.text).toContain('must be only string');
   });
 
   it('should pass, and call func update user avatar', async () => {
@@ -201,13 +214,14 @@ describe('should check work useer controller', () => {
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/user/:22/avatar')
       .set({ authorization: 'Bearer token' })
       .send({
         avatar: 'userAvatar',
-      })
-      .expect(200);
-    expect(res.text).toContain('true');
+      });
+    expect(response.status).toBe(200);
+    expect(response.text).toBeTruthy();
+    expect(response.text).toContain('true');
   });
 });

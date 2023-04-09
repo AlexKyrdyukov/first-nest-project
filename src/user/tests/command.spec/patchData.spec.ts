@@ -36,7 +36,7 @@ describe('check handler update user data', () => {
     jest.resetModules();
   });
 
-  it('check update user data', async () => {
+  it('should update user data & return updated user', async () => {
     const patchHandlerParams = {
       patchUserDto: {
         address: {
@@ -51,26 +51,25 @@ describe('check handler update user data', () => {
         password: '123',
       },
     };
-    const res = await patchDataHandler.execute(patchHandlerParams);
-    expect(res).toBeDefined();
-    expect(res).toHaveProperty('userId');
-    expect(res).toHaveProperty('email');
-    expect(res).toHaveProperty('address');
-    expect(res).toHaveProperty('roles');
+    const result = await patchDataHandler.execute(patchHandlerParams);
+    expect(result).not.toBeUndefined();
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('userId');
+    expect(result).toHaveProperty('email');
+    expect(result).toHaveProperty('address');
+    expect(result).toHaveProperty('roles');
   });
 
-  it('check update data if func throw error', async () => {
+  it('should throw error', async () => {
     const patchHandlerParams = {
       patchUserDto: {
         address: null as unknown as AddressEntity,
       },
       user: null as unknown as UserEntity,
     };
-    try {
-      await patchDataHandler.execute(patchHandlerParams);
-    } catch (error) {
-      expect(error.message).toBeDefined();
-      expect(error).toBeInstanceOf(Error);
-    }
+    await patchDataHandler.execute(patchHandlerParams).catch((err) => {
+      expect(err.message).toBeDefined();
+      expect(err).toBeInstanceOf(Error);
+    });
   });
 });

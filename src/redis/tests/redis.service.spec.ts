@@ -46,33 +46,40 @@ describe('redis service test', () => {
   });
 
   it('should set value return undefined', async () => {
-    const res = await service.set('test', '1234', 'token', '10m');
-    expect(res).not.toBeDefined();
+    const result = await service.set('rootKey', 'nestedKey', 'token', '10m');
+    expect(result).toBeUndefined();
+    expect(result).not.toBeDefined();
   });
 
-  it('should set value without four parametr', async () => {
-    const res = await service.set('test', '1234', 'token');
-    expect(res).not.toBeDefined();
+  it('should set value with third  parametrs', async () => {
+    const result = await service.set('test', '1234', 'token');
+    expect(result).toBeUndefined();
+    expect(result).not.toBeDefined();
   });
 
   it('should get value is null', async () => {
     jest.spyOn(redisClient, 'get').mockResolvedValue(null);
-    const res = await service.get('test', '1234');
-    expect(res).toBe(null);
+    const result = await service.get('test', '1234');
+    expect(result).toBeNull();
+    expect(result).toBe(null);
   });
 
   it('should get valid value', async () => {
-    const res = await service.get('test', 'test');
-    expect(res).toStrictEqual({ test: 'test' });
+    const result = await service.get('test', 'test');
+    expect(result).not.toBeNull();
+    expect(result).toStrictEqual({ test: 'test' });
   });
 
   it('test func create key', () => {
-    const res = service.createKey('test', 'tests');
-    expect(res).toBe('test:tests');
+    const result = service.createKey('test', 'tests');
+    expect(result).not.toBeUndefined();
+    expect(result).not.toBeNull();
+    expect(result).toBe('test:tests');
   });
 
   it('test function remove', async () => {
-    const res = await service.remove('test', 'test');
-    expect(res).not.toBeDefined();
+    const result = await service.remove('test', 'test');
+    expect(result).toBeUndefined();
+    expect(result).not.toBeDefined();
   });
 });

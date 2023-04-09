@@ -1,4 +1,4 @@
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import RedisService from '../../../redis/service';
@@ -42,7 +42,7 @@ describe('check refresh command handler', () => {
     deviceId: '1234',
   };
 
-  it('check refresh handler', async () => {
+  it('should pass test annd return accessToken, refreshToken', async () => {
     jest
       .spyOn(tokenService, 'verifyRefresh')
       .mockImplementation(() => Promise.resolve({ userId: 1 as never }));
@@ -51,26 +51,65 @@ describe('check refresh command handler', () => {
     expect(res).toHaveProperty('refreshToken');
   });
 
-  it('check refresh handler if unknown type auth', async () => {
+  it('should throw error verify refresh ', async () => {
+    jest
+      .spyOn(tokenService, 'verifyRefresh')
+      .mockImplementation(() =>
+        Promise.reject(
+          new HttpException(
+            'Please sign in application and repeat request',
+            HttpStatus.FORBIDDEN,
+          ),
+        ),
+      );
+
+    await refreshHandler.execute(refreshParams).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err).toHaveProperty('status', 403);
+      expect(err.message).toContain(
+        'Please sign in application and repeat request',
+      );
+    });
+  });
+
+  it('should throw error unknown type authorization', async () => {
     const refreshParams = {
       refreshUserDto: {
         refreshToken: 'token',
       },
       deviceId,
     };
-    expect(refreshHandler.execute(refreshParams)).rejects.toThrow();
-    // try {
-    //   const res = await refreshHandler.execute(refreshParams);
-    //   console.log(res);
-    //   expect(res).toThrow();
-    //   expect(res).toThrowError(
-    //     'Unknown type authorization, please enter in application & repeat request',
-    //   );
-    // } catch (error) {
-    //   expect(error).toBeInstanceOf(HttpException);
-    //   expect(error.message).toBe(
-    //     'Unknown type authorization, please enter in application & repeat request',
-    //   );
-    // }
+
+    await refreshHandler.execute(refreshParams).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err).toHaveProperty('status', 401);
+      expect(err.message).toContain('Unknown type authorization');
+    });
+  });
+
+  it('should throw error authorization', async () => {
+    const params = {
+      ...refreshParams,
+      deviceId: null as unknown as string,
+    };
+
+    await refreshHandler.execute(params).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err).toHaveProperty('status', 401);
+      expect(err.message).toContain('Unknown type authorization');
+    });
+  });
+
+  it('should throw error authorization', async () => {
+    const params = {
+      ...refreshParams,
+      deviceId: 3333 as unknown as string,
+    };
+
+    await refreshHandler.execute(params).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err).toHaveProperty('status', 401);
+      expect(err.message).toContain('Unknown type authorization');
+    });
   });
 });

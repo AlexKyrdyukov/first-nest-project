@@ -19,7 +19,7 @@ import { signUpUserData } from '../../../../tests/fakeAppData/userData/signUpDat
 import { RoleRepositoryFake } from '../../../../tests/fakeAppRepo/FakeRoleRepository';
 import { AddressRepositoryFake } from '../../../../tests/fakeAppRepo/FakeAddressRepository';
 
-describe('test sign up handler', () => {
+describe('test auth sign up handler', () => {
   let signUpHandler: SignUpUserHandler;
   let userRepository: UserRepositoryFake;
   let roleRepository: RoleRepositoryFake;
@@ -65,17 +65,17 @@ describe('test sign up handler', () => {
     jest.resetModules();
   });
 
-  it('check class sign up command if user already exist', async () => {
-    try {
-      await signUpHandler.execute(signUpUserData);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe('user with this email already exist');
-    }
+  it('should throw error existen user', async () => {
+    await signUpHandler.execute(signUpUserData).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err).toHaveProperty('status', 400);
+      expect(err.message).toBe('User with this email already exist');
+    });
   });
 
-  it('check class sign up command if all succesfully', async () => {
+  it('should return user acces, refreshToken', async () => {
     jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+
     const res = await signUpHandler.execute(signUpUserData);
     expect(res).toHaveProperty('accessToken');
     expect(res).toHaveProperty('refreshToken');
@@ -84,11 +84,12 @@ describe('test sign up handler', () => {
     expect(res.refreshToken).toHaveLength(143);
   });
 
-  it('check sign up command if create roles', async () => {
+  it('should return access, refreshTLoken & create roles', async () => {
     jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
     jest
       .spyOn(roleRepository, 'findOne')
       .mockImplementation(() => Promise.resolve(null));
+
     const res = await signUpHandler.execute(signUpUserData);
     expect(res).toHaveProperty('accessToken');
     expect(res).toHaveProperty('refreshToken');

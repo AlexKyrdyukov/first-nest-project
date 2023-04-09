@@ -11,7 +11,7 @@ export class RefreshUserHandler implements ICommandHandler<RefreshUserCommand> {
     const { refreshUserDto, deviceId } = command;
     const [auth, token] = refreshUserDto.refreshToken?.split(' ');
 
-    if (!deviceId || !deviceId.length || auth !== 'Bearer') {
+    if (!deviceId || !deviceId?.length || auth !== 'Bearer') {
       throw new HttpException(
         'Unknown type authorization, please enter in application & repeat request',
         HttpStatus.UNAUTHORIZED,

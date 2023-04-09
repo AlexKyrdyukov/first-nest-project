@@ -30,28 +30,27 @@ describe('check set avatar handler', () => {
     jest.resetModules();
   });
 
-  it('check set avatar handler succesfull', async () => {
+  it('should pass succesfully & returned updated user', async () => {
     const handlerParams = {
       avatarLink: 'link on avatar',
       userDto: {} as UserEntity,
     };
-    const res = await setAvatarHandler.execute(handlerParams);
-    expect(res).toHaveProperty('email');
-    expect(res).toHaveProperty('address');
-    expect(res).toHaveProperty('roles');
-    expect(res).toHaveProperty('userId');
+    const result = await setAvatarHandler.execute(handlerParams);
+    expect(result).toBeTruthy();
+    expect(result).toHaveProperty('email');
+    expect(result).toHaveProperty('address');
+    expect(result).toHaveProperty('roles');
+    expect(result).toHaveProperty('userId');
   });
 
-  it('check set avatar if handler throw error', async () => {
+  it('should throw error', async () => {
     const handlerParams = {
       avatarLink: null as unknown as string,
       userDto: null as unknown as UserEntity,
     };
-    try {
-      await setAvatarHandler.execute(handlerParams);
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toBeDefined();
-    }
+    await setAvatarHandler.execute(handlerParams).catch((err) => {
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBeDefined();
+    });
   });
 });

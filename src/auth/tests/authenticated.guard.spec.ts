@@ -44,7 +44,7 @@ describe('check auth guard', () => {
     jest.resetModules();
   });
 
-  it('should be throw error: "User unknown type authorized please sign in application"', async () => {
+  it('should throw error: "User unknown type authorized please sign in application"', async () => {
     const mockContext = createMock<ExecutionContext>();
 
     const request = {
@@ -56,17 +56,16 @@ describe('check auth guard', () => {
       },
     };
     mockContext.switchToHttp().getRequest.mockReturnValue(request);
-    try {
-      await authGuard.canActivate(mockContext);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe(
+    await authGuard.canActivate(mockContext).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err.status).toBe(401);
+      expect(err.message).toBe(
         'User unknown type authorized please sign in application',
       );
-    }
+    });
   });
 
-  it('should be throw error: "Unknown type authorization, please enter in application & repeat request"', async () => {
+  it('should throw error: "Unknown type authorization, please enter in application & repeat request"', async () => {
     const mockContext = createMock<ExecutionContext>();
 
     const request = {
@@ -78,14 +77,13 @@ describe('check auth guard', () => {
       },
     };
     mockContext.switchToHttp().getRequest.mockReturnValue(request);
-    try {
-      await authGuard.canActivate(mockContext);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe(
+    await authGuard.canActivate(mockContext).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err.status).toBe(401);
+      expect(err.message).toBe(
         'Unknown type authorization, please enter in application & repeat request',
       );
-    }
+    });
   });
 
   it('should be throw error: "Please authorization in application"', async () => {
@@ -97,12 +95,11 @@ describe('check auth guard', () => {
       },
     };
     mockContext.switchToHttp().getRequest.mockReturnValue(request);
-    try {
-      await authGuard.canActivate(mockContext);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe('Please authorization in application');
-    }
+    await authGuard.canActivate(mockContext).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err.status).toBe(401);
+      expect(err.message).toBe('Please authorization in application');
+    });
   });
 
   it('should be throw error: "Forbidden"', async () => {
@@ -119,12 +116,11 @@ describe('check auth guard', () => {
       },
     };
     mockContext.switchToHttp().getRequest.mockReturnValue(request);
-    try {
-      await authGuard.canActivate(mockContext);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe('Forbidden');
-    }
+    await authGuard.canActivate(mockContext).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err.status).toBe(401);
+      expect(err.message).toBe('Forbidden');
+    });
   });
 
   it('should be pass authenticated, find user and add user in request', async () => {
@@ -141,13 +137,9 @@ describe('check auth guard', () => {
       },
     };
     mockContext.switchToHttp().getRequest.mockReturnValue(request);
-    try {
-      const res = await authGuard.canActivate(mockContext);
-      expect(res).toBe(true);
-    } catch (error) {
-      console.log(error);
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toBeDefined();
-    }
+    const result = await authGuard.canActivate(mockContext);
+    expect(result).toBe(true);
+    expect(result).toBeDefined();
+    expect(result).toBeTruthy();
   });
 });

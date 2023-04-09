@@ -14,7 +14,7 @@ import { CommentControllers } from '../controllers';
 import UserEntity from '../../db/entities/User';
 import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
 
-describe('should check work useer controller', () => {
+describe('should check comment controller', () => {
   let app: INestApplication;
   let tokenService: TokenService;
   let userRepository: Repository<UserEntity>;
@@ -55,12 +55,12 @@ describe('should check work useer controller', () => {
   });
 
   it('should throw error auth guard create/comment', async () => {
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/comment/create')
       .set({ authorization: 'Unknown token' })
-      .send({})
-      .expect(401);
-    expect(res.text).toContain(
+      .send({});
+    expect(response.status).toBe(401);
+    expect(response.text).toContain(
       'Unknown type authorization, please enter in application & repeat request',
     );
   });
@@ -70,18 +70,18 @@ describe('should check work useer controller', () => {
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/comment/create')
       .set({ authorization: 'Bearer token' })
-      .send({})
-      .expect(400);
-    expect(res.text).toContain(
+      .send({});
+    expect(response.status).toBe(400);
+    expect(response.text).toContain(
       'content must be longer than or equal to 2 characters',
     );
-    expect(res.text).toContain(
+    expect(response.text).toContain(
       'content must be shorter than or equal to 1000 characters',
     );
-    expect(res.text).toContain('postId must be an integer number');
+    expect(response.text).toContain('postId must be an integer number');
   });
 
   it('should pass, and call func create comment', async () => {
@@ -89,14 +89,14 @@ describe('should check work useer controller', () => {
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/comment/create')
       .set({ authorization: 'Bearer token' })
       .send({
         content: 'Comment content',
         postId: 2,
-      })
-      .expect(201);
-    expect(res.text).toContain('true');
+      });
+    expect(response.status).toBe(201);
+    expect(response.text).toContain('true');
   });
 });

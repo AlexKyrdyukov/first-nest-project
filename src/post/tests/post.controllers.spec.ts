@@ -1,7 +1,11 @@
 import { AuthGuard } from '../../auth/authGuard';
 import RedisService from '../../redis/service';
 import TokenService from '../../token/service';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  INestApplication,
+  ValidationPipe,
+  HttpException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
@@ -12,7 +16,7 @@ import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepositor
 import { CommandBus } from '@nestjs/cqrs';
 import { Repository } from 'typeorm';
 
-describe('should check work useer controller', () => {
+describe('should check work post controller', () => {
   let app: INestApplication;
   let tokenService: TokenService;
   let userRepository: Repository<UserEntity>;
@@ -53,12 +57,13 @@ describe('should check work useer controller', () => {
   });
 
   it('should throw error auth guard create/post', async () => {
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/post/create')
       .set({ authorization: 'Unknown token' })
-      .send({})
-      .expect(401);
-    expect(res.text).toContain(
+      .send({});
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.status).toBe(401);
+    expect(response.text).toContain(
       'Unknown type authorization, please enter in application & repeat request',
     );
   });
@@ -68,34 +73,35 @@ describe('should check work useer controller', () => {
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/post/create')
       .set({ authorization: 'Bearer token' })
-      .send({})
-      .expect(400);
-    expect(res.text).toContain(
+      .send({});
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.status).toBe(400);
+    expect(response.text).toContain(
       'content must be longer than or equal to 2 characters',
     );
-    expect(res.text).toContain(
+    expect(response.text).toContain(
       'title must be shorter than or equal to 100 characters',
     );
   });
 
-  it('should pass, and call func create post', async () => {
+  it('should pass authGuard, validation & call func create post', async () => {
     jest
       .spyOn(tokenService, 'verifyToken')
       .mockResolvedValue({ userId: 22 as never });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/post/create')
       .set({ authorization: 'Bearer token' })
       .send({
         content: 'Post content',
         title: 'Post title',
         category: 'soccer',
-        categories: ['footbal'],
-      })
-      .expect(201);
-    expect(res.text).toContain('true');
+        categories: ['football'],
+      });
+    expect(response.status).toBe(201);
+    expect(response.text).toContain('true');
   });
 });

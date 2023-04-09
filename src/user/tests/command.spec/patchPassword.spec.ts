@@ -32,7 +32,7 @@ describe('test patch password handler', () => {
     jest.resetModules();
   });
 
-  it('check password handler when password valid', async () => {
+  it('should pass check password & update data', async () => {
     const handlerParams = {
       patchPasswordDto: {
         password: '123',
@@ -43,11 +43,12 @@ describe('test patch password handler', () => {
           'b7902eed0114afa8bc848c0f9fd8c7cd20f2eb67344e8702ba6adf59d6f45e3d137b851adbcf416fa1a3a2a949ca013ba2f3f9b4a7fc63a1f2aad1045ef732d4',
       } as UserEntity,
     };
-    const res = await patchPasswordHandler.execute(handlerParams);
-    expect(res).toBeUndefined();
+    const result = await patchPasswordHandler.execute(handlerParams);
+    expect(result).not.toBeTruthy();
+    expect(result).toBeUndefined();
   });
 
-  it('check password handler when password invalid', async () => {
+  it('should throw error invalid password', async () => {
     const handlerParams = {
       patchPasswordDto: {
         password: '123',
@@ -57,11 +58,10 @@ describe('test patch password handler', () => {
         password: '12344',
       } as UserEntity,
     };
-    try {
-      await patchPasswordHandler.execute(handlerParams);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe('Entered password invalid');
-    }
+    await patchPasswordHandler.execute(handlerParams).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err.status).toBe(400);
+      expect(err.message).toBe('Entered password invalid');
+    });
   });
 });

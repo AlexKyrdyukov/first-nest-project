@@ -1,14 +1,15 @@
+import { ConfigService } from '@nestjs/config';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthModule } from '../auth/module';
-import { CommentModule } from '../comment/module';
-import CryptoModule from '../crypto/module';
-import TokenModule from '../token/module';
+
 import UserModule from '../user/module';
-import redisProviders from '../redis/providers';
-import { ConfigService } from '@nestjs/config';
-import RedisModule from '../redis/module';
 import { AppModule } from '../app.module';
+import TokenModule from '../token/module';
+import RedisModule from '../redis/module';
+import CryptoModule from '../crypto/module';
+import { AuthModule } from '../auth/module';
+import redisProviders from '../redis/providers';
+import { CommentModule } from '../comment/module';
 import MainModule from '../../src/main';
 
 describe('should test modules application', () => {

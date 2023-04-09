@@ -13,7 +13,7 @@ import { UserRepositoryFake } from '../../../../tests/fakeAppRepo/FakeUserReposi
 import { FakeRedisService } from './../../../../tests/fakeAppRepo/fakeRedisServis';
 import { signInUserData } from '../../../../tests/fakeAppData/userData/signInData';
 
-describe('check auth commands', () => {
+describe('check auth sign in commands', () => {
   let signInHandler: SignInUserHandler;
   let cryptoService: CryptoService;
   let userRepository: UserRepositoryFake;
@@ -51,16 +51,15 @@ describe('check auth commands', () => {
     jest.resetModules();
   });
 
-  it('check class sign in if password invalid', async () => {
-    try {
-      await signInHandler.execute(signInUserData);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe('Entered password invalid');
-    }
+  it('should throw error invalid password', async () => {
+    await signInHandler.execute(signInUserData).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err).toHaveProperty('status', 400);
+      expect(err.message).toBe('Entered password invalid');
+    });
   });
 
-  it('check func if password valid', async () => {
+  it('should return user with accessToken, refreshToken', async () => {
     jest
       .spyOn(cryptoService, 'checkValid')
       .mockResolvedValue(null as unknown as void);
@@ -70,7 +69,7 @@ describe('check auth commands', () => {
     expect(res).toHaveProperty('user');
   });
 
-  it('check class sign in if user not found', async () => {
+  it('should throw error dont existen user', async () => {
     jest.spyOn(userRepository, 'createQueryBuilder').mockImplementation(() => ({
       addSelect: jest.fn().mockReturnThis(),
       where: jest.fn().mockReturnThis(),
@@ -82,11 +81,10 @@ describe('check auth commands', () => {
       .spyOn(cryptoService, 'checkValid')
       .mockResolvedValue(null as unknown as void);
 
-    try {
-      await signInHandler.execute(signInUserData);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe('User with this email dont exist');
-    }
+    await signInHandler.execute(signInUserData).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err).toHaveProperty('status', 400);
+      expect(err.message).toBe('User with this email dont exist');
+    });
   });
 });

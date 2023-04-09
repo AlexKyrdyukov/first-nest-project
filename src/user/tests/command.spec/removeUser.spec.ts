@@ -35,7 +35,7 @@ describe('check handler delete user', () => {
     jest.resetModules();
   });
 
-  it('check handler delete user', async () => {
+  it('should delete user', async () => {
     const handlerParams = {
       userDto: {} as UserEntity,
     };
@@ -44,16 +44,13 @@ describe('check handler delete user', () => {
     expect(res).toBeUndefined();
   });
 
-  it('check handler delete user', async () => {
+  it('should throw error', async () => {
     const handlerParams = {
       userDto: {} as UserEntity,
     };
-
-    try {
-      await removeUserHandler.execute(handlerParams);
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toBeDefined();
-    }
+    await removeUserHandler.execute(handlerParams).catch((err) => {
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBeDefined();
+    });
   });
 });

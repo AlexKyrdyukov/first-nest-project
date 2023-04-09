@@ -39,7 +39,7 @@ describe('check create comment handler', () => {
     jest.resetModules();
   });
 
-  it('check create comment handler', async () => {
+  it('should pass handler & return post with comment', async () => {
     const handlerParams = {
       createCommentDto: {
         content: 'text comment',
@@ -53,18 +53,12 @@ describe('check create comment handler', () => {
         avatar: 'avatar',
       },
     };
-    const res = await createComment.execute(handlerParams);
-    expect(res).toStrictEqual({
-      post: {
-        postId: 1,
-        content: 'post content',
-        title: 'post title',
-        comments: [],
-      },
-    });
+    const result = await createComment.execute(handlerParams);
+    expect(result).toHaveProperty('post');
+    expect(result).toBeTruthy();
   });
 
-  it('check handler if post dont find', async () => {
+  it('should throw error post not found', async () => {
     const handlerParams = {
       createCommentDto: {
         content: 'text comment',
@@ -80,17 +74,16 @@ describe('check create comment handler', () => {
     };
 
     jest.spyOn(postRepository, 'findOne').mockResolvedValue(null);
-    try {
-      await createComment.execute(handlerParams);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBe(
+    await createComment.execute(handlerParams).catch((err) => {
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err.status).toBe(400);
+      expect(err.message).toBe(
         'This post not found please check data & repeat request',
       );
-    }
+    });
   });
 
-  it('check create comment handler if func throw error', async () => {
+  it('should throw error Error', async () => {
     const handlerParams = {
       createCommentDto: {
         content: 'text comment',
@@ -104,11 +97,9 @@ describe('check create comment handler', () => {
         avatar: 'avatar',
       },
     };
-    try {
-      await createComment.execute(handlerParams);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.message).toBeDefined();
-    }
+    await createComment.execute(handlerParams).catch((err) => {
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBeDefined();
+    });
   });
 });

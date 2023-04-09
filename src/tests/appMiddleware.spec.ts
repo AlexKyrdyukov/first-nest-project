@@ -1,6 +1,7 @@
 import { HttpException } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
 import { Request, Response, NextFunction } from 'express';
+
 import { appMiddleware } from '../app.middleware';
 
 describe('check app Middleware', () => {
@@ -35,7 +36,7 @@ describe('check app Middleware', () => {
     }
   });
 
-  it('should throw error if diveciId empty string ', () => {
+  it('should throw error if deviceId empty string ', () => {
     const currentRequest = {
       ...request,
       headers: {
@@ -57,7 +58,7 @@ describe('check app Middleware', () => {
     }
   });
 
-  it('should throw error if diveciId type number ', () => {
+  it('should throw error if deviceId type number ', () => {
     const currentRequest = {
       ...request,
       headers: {
