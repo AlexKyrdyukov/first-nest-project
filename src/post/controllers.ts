@@ -1,11 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 import {
   ApiBearerAuth,
@@ -28,6 +29,8 @@ import { Roles } from '../roles/rolesDecorator';
 import { CreatePostDto } from './dto/createPostDto';
 import { UserParamDto } from '../user/dto/userParamDto';
 import { CreatePostCommand } from './commands/implementations/createPostCommand';
+import { GetAllPostDto } from './dto/getAllPostDto';
+import { GetAllPostQuery } from './query/implementations/getAllPostQuery';
 
 @Controller('post')
 @ApiTags('post api')
@@ -35,7 +38,10 @@ import { CreatePostCommand } from './commands/implementations/createPostCommand'
 @ApiBearerAuth('access-token')
 @UseGuards(AuthGuard, RolesGuard)
 export class PostControllers {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
   @ApiOperation({ summary: 'create post' })
   @ApiBody({
@@ -53,5 +59,23 @@ export class PostControllers {
     @User() userDto: UserEntity,
   ) {
     return this.commandBus.execute(new CreatePostCommand(body, userDto));
+  }
+
+  @ApiOperation({ summary: 'get all comments with post' })
+  @ApiBody({
+    type: GetAllPostDto,
+  })
+  @ApiResponse({ status: 200, type: [PostEntity] })
+  @ApiResponse({
+    status: 400,
+    description: 'This post not found',
+  })
+  @Get('/')
+  @Roles('admin') // add role
+  async getAll(
+    @Body(new ValidationPipe({ whitelist: true }))
+    body: GetAllPostDto,
+  ) {
+    return this.queryBus.execute(new GetAllPostQuery(body));
   }
 }

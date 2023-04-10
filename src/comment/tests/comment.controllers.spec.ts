@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
@@ -25,6 +25,10 @@ describe('should check comment controller', () => {
         TokenService,
         {
           provide: CommandBus,
+          useValue: { execute: () => true },
+        },
+        {
+          provide: QueryBus,
           useValue: { execute: () => true },
         },
         {
@@ -97,6 +101,47 @@ describe('should check comment controller', () => {
         postId: 2,
       });
     expect(response.status).toBe(201);
+    expect(response.text).toContain('true');
+  });
+
+  it('should throw error auth guard getAll/comment', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/comment')
+      .set({ authorization: 'Unknown token' })
+      .send({});
+    expect(response.status).toBe(401);
+    expect(response.text).toContain(
+      'Unknown type authorization, please enter in application & repeat request',
+    );
+  });
+
+  it('should throw error validation pipe getAll/ comment', async () => {
+    jest
+      .spyOn(tokenService, 'verifyToken')
+      .mockResolvedValue({ userId: 22 as never });
+
+    const response = await request(app.getHttpServer())
+      .get('/comment')
+      .set({ authorization: 'Bearer token' })
+      .send({});
+    expect(response.status).toBe(400);
+    expect(response.text).toContain('postId must be a positive number');
+    expect(response.text).toContain('postId should not be empty');
+    expect(response.text).toContain('postId must be an integer number');
+  });
+
+  it('should pass, and call func create comment', async () => {
+    jest
+      .spyOn(tokenService, 'verifyToken')
+      .mockResolvedValue({ userId: 22 as never });
+
+    const response = await request(app.getHttpServer())
+      .get('/comment')
+      .set({ authorization: 'Bearer token' })
+      .send({
+        postId: 2,
+      });
+    expect(response.status).toBe(200);
     expect(response.text).toContain('true');
   });
 });

@@ -8,7 +8,8 @@ import CommentEntity from '../db/entities/Comment';
 
 import TokenService from '../token/service';
 import RedisModule from '../redis/module';
-import { CommandHamdlers } from './commands/handlers';
+import { CommandHandlers } from './commands/handlers';
+import { QueryHandlers } from './query/handlers';
 import { CommentControllers } from './controllers';
 
 @Module({
@@ -17,7 +18,7 @@ import { CommentControllers } from './controllers';
     RedisModule,
     CqrsModule,
   ],
-  providers: [...CommandHamdlers, TokenService],
+  providers: [...CommandHandlers, ...QueryHandlers, TokenService],
   controllers: [CommentControllers],
 })
 export class CommentModule {}

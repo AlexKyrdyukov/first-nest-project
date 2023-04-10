@@ -36,4 +36,27 @@ export class PostRepositoryFake {
       comments: [],
     };
   }
+
+  public async findAndCount(): Promise<[Partial<PostEntity>[] | null, number]> {
+    return [
+      [
+        {
+          postId: 1,
+          content: 'post content',
+          title: 'post title',
+        },
+        {
+          postId: 2,
+          content: 'post content',
+          title: 'post title',
+        },
+        {
+          postId: 3,
+          content: 'post content',
+          title: 'post title',
+        },
+      ],
+      3,
+    ];
+  }
 }

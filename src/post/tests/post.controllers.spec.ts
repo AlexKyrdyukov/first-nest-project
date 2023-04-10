@@ -13,7 +13,7 @@ import UserEntity from '../../db/entities/User';
 import { PostControllers } from '../controllers';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserRepositoryFake } from '../../../tests/fakeAppRepo/FakeUserRepository';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Repository } from 'typeorm';
 
 describe('should check work post controller', () => {
@@ -27,6 +27,10 @@ describe('should check work post controller', () => {
         TokenService,
         {
           provide: CommandBus,
+          useValue: { execute: () => true },
+        },
+        {
+          provide: QueryBus,
           useValue: { execute: () => true },
         },
         {
@@ -102,6 +106,50 @@ describe('should check work post controller', () => {
         categories: ['football'],
       });
     expect(response.status).toBe(201);
+    expect(response.text).toContain('true');
+  });
+
+  ////
+
+  it('should throw error auth guard getAll/post', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/post')
+      .set({ authorization: 'Unknown token' })
+      .send({});
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.status).toBe(401);
+    expect(response.text).toContain(
+      'Unknown type authorization, please enter in application & repeat request',
+    );
+  });
+
+  it('should throw error validation pipe getAll/post', async () => {
+    jest
+      .spyOn(tokenService, 'verifyToken')
+      .mockResolvedValue({ userId: 22 as never });
+
+    const response = await request(app.getHttpServer())
+      .get('/post')
+      .set({ authorization: 'Bearer token' })
+      .send({});
+    expect(response.error).toBeInstanceOf(Error);
+    expect(response.status).toBe(400);
+    expect(response.text).toContain('userId must be a positive number');
+    expect(response.text).toContain('userId should not be empty');
+  });
+
+  it('should pass authGuard, validation & call func getAll post', async () => {
+    jest
+      .spyOn(tokenService, 'verifyToken')
+      .mockResolvedValue({ userId: 22 as never });
+
+    const response = await request(app.getHttpServer())
+      .get('/post')
+      .set({ authorization: 'Bearer token' })
+      .send({
+        userId: 14,
+      });
+    expect(response.status).toBe(200);
     expect(response.text).toContain('true');
   });
 });

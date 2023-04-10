@@ -10,14 +10,14 @@ import CategoryEntity from '../db/entities/Categories';
 import RedisModule from '../redis/module';
 import { PostControllers } from './controllers';
 import { CommandHandlers } from './commands/handlers';
-
+import { QueryHandlers } from './query/handlers';
 @Module({
   imports: [
     TypeOrmModule.forFeature([CategoryEntity, PostEntity, UserEntity]),
     RedisModule,
     CqrsModule,
   ],
-  providers: [...CommandHandlers, TokenService],
+  providers: [...CommandHandlers, ...QueryHandlers, TokenService],
   controllers: [PostControllers],
 })
 export class PostModule {}
